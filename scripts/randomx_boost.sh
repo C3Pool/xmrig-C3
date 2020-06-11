@@ -18,3 +18,4 @@ elif cat /proc/cpuinfo | grep "Intel" > /dev/null;
 else
 	echo "No supported CPU detected"
 fi
+
