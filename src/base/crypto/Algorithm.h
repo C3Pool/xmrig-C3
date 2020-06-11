@@ -64,16 +64,18 @@ public:
         CN_HEAVY_XHV,  // "cn-heavy/xhv"     CryptoNight-Heavy (modified, Haven Protocol only).
         CN_PICO_0,     // "cn-pico"          CryptoNight-Pico
         CN_PICO_TLO,   // "cn-pico/tlo"      CryptoNight-Pico (TLO)
+        CN_CCX,        // "cn/ccx"           Conceal (CCX)
         RX_0,          // "rx/0"             RandomX (reference configuration).
         RX_WOW,        // "rx/wow"           RandomWOW (Wownero).
         RX_LOKI,       // "rx/loki"          RandomXL (Loki).
-        DEFYX,         // "defyx"            DefyX (Scala).
         RX_ARQ,        // "rx/arq"           RandomARQ (Arqma).
         RX_SFX,        // "rx/sfx"           RandomSFX (Safex Cash).
         RX_KEVA,       // "rx/keva"          RandomKEVA (Keva).
+        RX_DEFYX,      // "defyx"            DefyX (Scala).
         AR2_CHUKWA,    // "argon2/chukwa"    Argon2id (Chukwa).
         AR2_WRKZ,      // "argon2/wrkz"      Argon2id (WRKZ)
         ASTROBWT_DERO, // "astrobwt"         AstroBWT (Dero)
+        KAWPOW_RVN,    // "kawpow/rvn"       KawPow (RVN)
         MAX
     };
 
@@ -85,7 +87,8 @@ public:
         CN_PICO,
         RANDOM_X,
         ARGON2,
-        ASTROBWT
+        ASTROBWT,
+        KAWPOW
     };
 
     inline Algorithm() = default;

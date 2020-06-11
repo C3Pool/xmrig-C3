@@ -74,14 +74,18 @@ public:
         DaemonPollKey        = 1019,
         SelfSelectKey        = 1028,
         DataDirKey           = 1035,
+        TitleKey             = 1037,
+        NoTitleKey           = 1038,
 
         // xmrig common
         CPUPriorityKey       = 1021,
         NicehashKey          = 1006,
         PrintTimeKey         = 1007,
 
+#       ifdef XMRIG_FEATURE_BENCHMARK
         RebenchAlgoKey       = 10001,
         BenchAlgoTimeKey     = 10002,
+#       endif
 
         // xmrig cpu
         CPUKey               = 1024,

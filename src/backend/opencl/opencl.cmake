@@ -125,6 +125,21 @@ if (WITH_OPENCL)
              )
     endif()
 
+    if (WITH_KAWPOW)
+        list(APPEND HEADERS_BACKEND_OPENCL
+             src/backend/opencl/kernels/kawpow/KawPow_CalculateDAGKernel.h
+             src/backend/opencl/runners/OclKawPowRunner.h
+             src/backend/opencl/runners/tools/OclKawPow.h
+             )
+
+        list(APPEND SOURCES_BACKEND_OPENCL
+             src/backend/opencl/generators/ocl_generic_kawpow_generator.cpp
+             src/backend/opencl/kernels/kawpow/KawPow_CalculateDAGKernel.cpp
+             src/backend/opencl/runners/OclKawPowRunner.cpp
+             src/backend/opencl/runners/tools/OclKawPow.cpp
+             )
+    endif()
+
     if (WITH_CN_GPU AND CMAKE_SIZEOF_VOID_P EQUAL 8)
         list(APPEND HEADERS_BACKEND_OPENCL
              src/backend/opencl/kernels/Cn00RyoKernel.h

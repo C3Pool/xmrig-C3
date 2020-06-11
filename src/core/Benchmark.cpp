@@ -16,19 +16,23 @@
  */
 
 #include "core/Benchmark.h"
-#include "core/Controller.h"
-#include "core/config/Config.h"
-#include "core/Miner.h"
+#include "3rdparty/rapidjson/document.h"
+#include "backend/common/Hashrate.h"
+#include "backend/common/interfaces/IBackend.h"
+#include "backend/common/Tags.h"
 #include "base/io/log/Log.h"
+#include "base/io/log/Tags.h"
 #include "base/net/stratum/Job.h"
+#include "core/config/Config.h"
+#include "core/Controller.h"
+#include "core/Miner.h"
 #include "net/JobResult.h"
 #include "net/JobResults.h"
 #include "net/Network.h"
-#include "rapidjson/document.h"
-#include "backend/common/interfaces/IBackend.h"
+
 #include <chrono>
 
-namespace xmrig {                          
+namespace xmrig {
 
 Benchmark::Benchmark() : m_controller(nullptr), m_isNewBenchRun(true) {
   for (BenchAlgo bench_algo = static_cast<BenchAlgo>(0); bench_algo != BenchAlgo::MAX; bench_algo = static_cast<BenchAlgo>(bench_algo + 1)) {
@@ -46,7 +50,7 @@ Benchmark::~Benchmark() {
 void Benchmark::start() {
     JobResults::setListener(this, m_controller->config()->cpu().isHwAES()); // register benchmark as job result listener to compute hashrates there
     // write text before first benchmark round
-    LOG_ALERT(">>>>> STARTING ALGO PERFORMANCE CALIBRATION (with %i seconds round)", m_controller->config()->benchAlgoTime());
+    LOG_INFO("%s " BLUE_BG(WHITE_BOLD_S "STARTING ALGO PERFORMANCE CALIBRATION (with " MAGENTA_BOLD_S "%i" WHITE_BOLD_S " seconds round)"), Tags::benchmark(), m_controller->config()->benchAlgoTime());
     // start benchmarking from first PerfAlgo in the list
     start(xmrig::Benchmark::MIN);
     m_isNewBenchRun = true;
@@ -58,7 +62,9 @@ void Benchmark::finish() {
         algo_perf[algo] = get_algo_perf(algo);
     }
     m_bench_algo = BenchAlgo::INVALID;
+    LOG_INFO("%s " BLUE_BG(WHITE_BOLD_S "ALGO PERFORMANCE CALIBRATION COMPLETE"), Tags::benchmark());
     m_controller->miner()->pause(); // do not compute anything before job from the pool
+    JobResults::stop();
     JobResults::setListener(m_controller->network(), m_controller->config()->cpu().isHwAES());
     m_controller->start();
 }
@@ -86,7 +92,7 @@ void Benchmark::read(const rapidjson::Value &value)
         for (auto &member : value.GetObject()) {
             const Algorithm algo(member.name.GetString());
             if (!algo.isValid()) {
-                LOG_ALERT("Ignoring wrong algo-perf name %s", member.name.GetString());
+                LOG_INFO("%s " BLUE_BG(BLACK_BOLD_S "Ignoring wrong name for algo-perf[%s]"), Tags::benchmark(), member.name.GetString());
                 continue;
             }
             if (member.value.IsFloat()) {
@@ -99,38 +105,44 @@ void Benchmark::read(const rapidjson::Value &value)
                 m_isNewBenchRun = false;
                 continue;
             }
-            LOG_ALERT("Ignoring wrong value for %s algo-perf", member.name.GetString());
+            LOG_INFO("%s " BLUE_BG(WHITE_BOLD_S "Ignoring wrong value for algo-perf[%s]"), Tags::benchmark(), member.name.GetString());
         }
     }
 }
 
-float Benchmark::get_algo_perf(Algorithm::Id algo) const {
+double Benchmark::get_algo_perf(Algorithm::Id algo) const {
     switch (algo) {
-        case Algorithm::CN_0:          return m_bench_algo_perf[BenchAlgo::CN_R];
+        case Algorithm::CN_CCX:        return m_bench_algo_perf[BenchAlgo::CN_CCX];
+        case Algorithm::CN_0:          return m_bench_algo_perf[BenchAlgo::CN_CCX] / 2;
         case Algorithm::CN_1:          return m_bench_algo_perf[BenchAlgo::CN_R];
         case Algorithm::CN_2:          return m_bench_algo_perf[BenchAlgo::CN_R];
         case Algorithm::CN_R:          return m_bench_algo_perf[BenchAlgo::CN_R];
+        case Algorithm::CN_RTO:        return m_bench_algo_perf[BenchAlgo::CN_R];
+        case Algorithm::CN_XAO:        return m_bench_algo_perf[BenchAlgo::CN_R];
         case Algorithm::CN_FAST:       return m_bench_algo_perf[BenchAlgo::CN_R] * 2;
         case Algorithm::CN_HALF:       return m_bench_algo_perf[BenchAlgo::CN_R] * 2;
-        case Algorithm::CN_XAO:        return m_bench_algo_perf[BenchAlgo::CN_R];
-        case Algorithm::CN_RTO:        return m_bench_algo_perf[BenchAlgo::CN_R];
         case Algorithm::CN_RWZ:        return m_bench_algo_perf[BenchAlgo::CN_R] / 3 * 4;
         case Algorithm::CN_ZLS:        return m_bench_algo_perf[BenchAlgo::CN_R] / 3 * 4;
         case Algorithm::CN_DOUBLE:     return m_bench_algo_perf[BenchAlgo::CN_R] / 2;
-        case Algorithm::CN_GPU:        return m_bench_algo_perf[BenchAlgo::CN_GPU];
         case Algorithm::CN_LITE_0:     return m_bench_algo_perf[BenchAlgo::CN_LITE_1];
         case Algorithm::CN_LITE_1:     return m_bench_algo_perf[BenchAlgo::CN_LITE_1];
         case Algorithm::CN_HEAVY_0:    return m_bench_algo_perf[BenchAlgo::CN_HEAVY_TUBE];
         case Algorithm::CN_HEAVY_TUBE: return m_bench_algo_perf[BenchAlgo::CN_HEAVY_TUBE];
         case Algorithm::CN_HEAVY_XHV:  return m_bench_algo_perf[BenchAlgo::CN_HEAVY_TUBE];
         case Algorithm::CN_PICO_0:     return m_bench_algo_perf[BenchAlgo::CN_PICO_0];
-        case Algorithm::RX_LOKI:       return m_bench_algo_perf[BenchAlgo::RX_0];
-        case Algorithm::RX_WOW:        return m_bench_algo_perf[BenchAlgo::RX_WOW];
-        case Algorithm::RX_0:          return m_bench_algo_perf[BenchAlgo::RX_0];
-        case Algorithm::DEFYX:         return m_bench_algo_perf[BenchAlgo::DEFYX];
-        case Algorithm::RX_ARQ:        return m_bench_algo_perf[BenchAlgo::RX_ARQ];
+        case Algorithm::CN_PICO_TLO:   return m_bench_algo_perf[BenchAlgo::CN_PICO_0];
+        case Algorithm::CN_GPU:        return m_bench_algo_perf[BenchAlgo::CN_GPU];
         case Algorithm::AR2_CHUKWA:    return m_bench_algo_perf[BenchAlgo::AR2_CHUKWA];
+        case Algorithm::AR2_WRKZ:      return m_bench_algo_perf[BenchAlgo::AR2_WRKZ];
         case Algorithm::ASTROBWT_DERO: return m_bench_algo_perf[BenchAlgo::ASTROBWT_DERO];
+        case Algorithm::KAWPOW_RVN:    return m_bench_algo_perf[BenchAlgo::KAWPOW_RVN];
+        case Algorithm::RX_0:          return m_bench_algo_perf[BenchAlgo::RX_0];
+        case Algorithm::RX_LOKI:       return m_bench_algo_perf[BenchAlgo::RX_0];
+        case Algorithm::RX_SFX:        return m_bench_algo_perf[BenchAlgo::RX_0];
+        case Algorithm::RX_WOW:        return m_bench_algo_perf[BenchAlgo::RX_WOW];
+        case Algorithm::RX_ARQ:        return m_bench_algo_perf[BenchAlgo::RX_ARQ];
+        case Algorithm::RX_KEVA:       return m_bench_algo_perf[BenchAlgo::RX_KEVA];
+        case Algorithm::RX_DEFYX:      return m_bench_algo_perf[BenchAlgo::RX_DEFYX];
         default: return 0.0f;
     }
 }
@@ -145,6 +157,7 @@ void Benchmark::start(const BenchAlgo bench_algo) {
         run_next_bench_algo(bench_algo);
         return;
     }
+    LOG_INFO("%s " BLUE_BG(WHITE_BOLD_S "Algo %s Preparation"), Tags::benchmark(), algo.shortName());
     // prepare test job for benchmark runs ("benchmark" client id is to make sure we can detect benchmark jobs)
     Job& job = *m_bench_job[bench_algo];
     job.setId(algo.shortName()); // need to set different id so that workers will see job change
@@ -186,12 +199,26 @@ void Benchmark::onJobResult(const JobResult& result) {
     if (m_backends_started.size() < m_enabled_backend_count && (now - m_time_start < static_cast<unsigned>(3*60*1000))) return;
     ++ m_hash_count;
     if (!m_bench_start) {
-       LOG_ALERT(" ===> Starting benchmark of %s algo", Algorithm(ba2a[m_bench_algo]).shortName());
+       LOG_INFO("%s " BLUE_BG(WHITE_BOLD_S "Algo %s Starting test"), Tags::benchmark(), Algorithm(ba2a[m_bench_algo]).shortName());
        m_bench_start = now; // time of measurements start (in ms)
     } else if (now - m_bench_start > static_cast<unsigned>(m_controller->config()->benchAlgoTime()*1000)) { // end of benchmark round for m_bench_algo
-        const float hashrate = static_cast<float>(m_hash_count) * result.diff / (now - m_bench_start) * 1000.0f;
+        double t[3] = { 0.0 };
+        for (auto backend : m_controller->miner()->backends()) {
+            const Hashrate *hr = backend->hashrate();
+            if (!hr) {
+                continue;
+            }
+            t[0] += hr->calc(Hashrate::ShortInterval);
+            t[1] += hr->calc(Hashrate::MediumInterval);
+            t[2] += hr->calc(Hashrate::LargeInterval);
+        }
+        double hashrate = 0.0f;
+        if (!(hashrate = t[2]))
+            if (!(hashrate = t[1]))
+                if (!(hashrate = t[0]))
+                    hashrate = static_cast<double>(m_hash_count) * result.diff / (now - m_bench_start) * 1000.0f;
         m_bench_algo_perf[m_bench_algo] = hashrate; // store hashrate result
-        LOG_ALERT(" ===> %s hasrate: %f", Algorithm(ba2a[m_bench_algo]).shortName(), hashrate);
+        LOG_INFO("%s " BLUE_BG(WHITE_BOLD_S "Algo %s hashrate: %f"), Tags::benchmark(), Algorithm(ba2a[m_bench_algo]).shortName(), hashrate);
         run_next_bench_algo(m_bench_algo);
     }
 }
@@ -202,3 +229,8 @@ uint64_t Benchmark::get_now() const { // get current time in ms
 }
 
 } // namespace xmrig
+
+const char *xmrig::bm_tag()
+{
+    return Tags::benchmark();
+}

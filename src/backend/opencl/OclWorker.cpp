@@ -45,10 +45,13 @@
 #   include "backend/opencl/runners/OclAstroBWTRunner.h"
 #endif
 
+#ifdef XMRIG_ALGO_KAWPOW
+#   include "backend/opencl/runners/OclKawPowRunner.h"
+#endif
+
 #ifdef XMRIG_ALGO_CN_GPU
 #   include "backend/opencl/runners/OclRyoRunner.h"
 #endif
-
 
 #include <cassert>
 #include <thread>
@@ -106,16 +109,20 @@ xmrig::OclWorker::OclWorker(size_t id, const OclLaunchData &data) :
 #       endif
         break;
 
-    default:
-#       ifdef XMRIG_ALGO_CN_GPU
-        if (m_algorithm == Algorithm::CN_GPU) {
-            m_runner = new OclRyoRunner(id, data);
-        }
-        else
+    case Algorithm::KAWPOW:
+#       ifdef XMRIG_ALGO_KAWPOW
+        m_runner = new OclKawPowRunner(id, data);
 #       endif
-        {
-            m_runner = new OclCnRunner(id, data);
-        }
+        break;
+
+    case Algorithm::CN_GPU:
+#       ifdef XMRIG_ALGO_CN_GPU
+        m_runner = new OclRyoRunner(id, data);
+#       endif
+        break;
+
+    default:
+        m_runner = new OclCnRunner(id, data);
         break;
     }
 
@@ -139,6 +146,14 @@ xmrig::OclWorker::OclWorker(size_t id, const OclLaunchData &data) :
 xmrig::OclWorker::~OclWorker()
 {
     delete m_runner;
+}
+
+
+void xmrig::OclWorker::jobEarlyNotification(const Job& job)
+{
+    if (m_runner) {
+        m_runner->jobEarlyNotification(job);
+    }
 }
 
 
@@ -198,7 +213,7 @@ void xmrig::OclWorker::start()
                 JobResults::submit(m_job.currentJob(), results, results[0xFF]);
             }
 
-            if (!m_job.nextRound(roundSize(runnerRoundSize), runnerRoundSize)) {
+            if (!Nonce::isOutdated(Nonce::OPENCL, m_job.sequence()) && !m_job.nextRound(roundSize(runnerRoundSize), runnerRoundSize)) {
                 JobResults::done(m_job.currentJob());
             }
 

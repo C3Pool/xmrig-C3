@@ -139,6 +139,15 @@ size_t inline generate<Algorithm::ASTROBWT>(Threads<OclThreads>& threads, const 
 #endif
 
 
+#ifdef XMRIG_ALGO_KAWPOW
+template<>
+size_t inline generate<Algorithm::KAWPOW>(Threads<OclThreads>& threads, const std::vector<OclDevice>& devices)
+{
+    return generate("kawpow", threads, Algorithm::KAWPOW_RVN, devices);
+}
+#endif
+
+
 static inline std::vector<OclDevice> filterDevices(const std::vector<OclDevice> &devices, const std::vector<uint32_t> &hints)
 {
     std::vector<OclDevice> out;

@@ -145,6 +145,15 @@ size_t inline generate<Algorithm::ASTROBWT>(Threads<CudaThreads> &threads, const
 #endif
 
 
+#ifdef XMRIG_ALGO_KAWPOW
+template<>
+size_t inline generate<Algorithm::KAWPOW>(Threads<CudaThreads> &threads, const std::vector<CudaDevice> &devices)
+{
+    return generate("kawpow", threads, Algorithm::KAWPOW_RVN, devices);
+}
+#endif
+
+
 } /* namespace xmrig */
 
 

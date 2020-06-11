@@ -42,7 +42,6 @@
 
 #ifdef XMRIG_ALGO_RANDOMX
 #   include "crypto/randomx/randomx.h"
-#   include "crypto/defyx/defyx.h"
 #endif
 
 
@@ -144,9 +143,13 @@ bool xmrig::CpuWorker<N>::selfTest()
                         verify(Algorithm::CN_XAO,    test_output_xao)  &&
                         verify(Algorithm::CN_RTO,    test_output_rto)  &&
                         verify(Algorithm::CN_HALF,   test_output_half) &&
+#                       ifdef XMRIG_ALGO_CN_GPU
+                        verify(Algorithm::CN_GPU,    test_output_gpu)  &&
+#                       endif
                         verify2(Algorithm::CN_R,     test_output_r)    &&
                         verify(Algorithm::CN_RWZ,    test_output_rwz)  &&
                         verify(Algorithm::CN_ZLS,    test_output_zls)  &&
+                        verify(Algorithm::CN_CCX,    test_output_ccx)  &&
                         verify(Algorithm::CN_DOUBLE, test_output_double);
 
 #       ifdef XMRIG_ALGO_CN_GPU
@@ -249,29 +252,24 @@ void xmrig::CpuWorker<N>::start()
 #           ifdef XMRIG_ALGO_RANDOMX
             if (job.algorithm().family() == Algorithm::RANDOM_X) {
 
-              if (job.algorithm() == Algorithm::DEFYX) {
                 if (first) {
                     first = false;
-                    defyx_calculate_hash_first(m_vm, tempHash, m_job.blob(), job.size());
+                    if (job.algorithm() == Algorithm::RX_DEFYX) {
+                        defyx_calculate_hash_first(m_vm, tempHash, m_job.blob(), job.size());
+                    } else {
+                        randomx_calculate_hash_first(m_vm, tempHash, m_job.blob(), job.size());
+                    }
                 }
 
                 if (!nextRound(m_job)) {
                     break;
                 }
 
-                defyx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(), m_hash);
-              } else {
-                if (first) {
-                    first = false;
-                    randomx_calculate_hash_first(m_vm, tempHash, m_job.blob(), job.size());
+                if (job.algorithm() == Algorithm::RX_DEFYX) {
+                    defyx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(), m_hash);
+                } else {
+                    randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(), m_hash);
                 }
-
-                if (!nextRound(m_job)) {
-                    break;
-                }
-
-                randomx_calculate_hash_next(m_vm, tempHash, m_job.blob(), job.size(), m_hash);
-              }
             }
             else
 #           endif

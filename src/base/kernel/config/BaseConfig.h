@@ -26,6 +26,7 @@
 #define XMRIG_BASECONFIG_H
 
 
+#include "base/kernel/config/Title.h"
 #include "base/kernel/interfaces/IConfig.h"
 #include "base/net/http/Http.h"
 #include "base/net/stratum/Pools.h"
@@ -45,19 +46,32 @@ class IJsonReader;
 class BaseConfig : public IConfig
 {
 public:
+#   ifdef XMRIG_FEATURE_BENCHMARK
+    static const char *kAlgoPerf;
+#   endif
     static const char *kApi;
     static const char *kApiId;
     static const char *kApiWorkerId;
     static const char *kAutosave;
     static const char *kBackground;
+#   ifdef XMRIG_FEATURE_BENCHMARK
+    static const char *kBenchAlgoTime;
+#   endif
     static const char *kColors;
     static const char *kDryRun;
     static const char *kHttp;
     static const char *kLogFile;
     static const char *kPrintTime;
+#   ifdef XMRIG_FEATURE_BENCHMARK
+    static const char *kRebenchAlgo;
+#   endif
     static const char *kSyslog;
+    static const char *kTitle;
     static const char *kUserAgent;
     static const char *kVerbose;
+#   ifdef XMRIG_FEATURE_BENCHMARK
+    static const char *kVersion;
+#   endif
     static const char *kWatch;
 
 #   ifdef XMRIG_FEATURE_TLS
@@ -76,10 +90,13 @@ public:
     inline const Pools &pools() const                       { return m_pools; }
     inline const String &apiId() const                      { return m_apiId; }
     inline const String &apiWorkerId() const                { return m_apiWorkerId; }
+    inline const Title &title() const                       { return m_title; }
     inline uint32_t printTime() const                       { return m_printTime; }
 
+#   ifdef XMRIG_FEATURE_BENCHMARK
     inline bool isRebenchAlgo() const                       { return m_rebenchAlgo; }
     inline int  benchAlgoTime() const                       { return m_benchAlgoTime; }
+#   endif
 
 #   ifdef XMRIG_FEATURE_TLS
     inline const TlsConfig &tls() const                     { return m_tls; }
@@ -108,10 +125,14 @@ protected:
     String m_fileName;
     String m_logFile;
     String m_userAgent;
+    Title m_title;
     uint32_t m_printTime = 60;
 
+#   ifdef XMRIG_FEATURE_BENCHMARK
+    uint32_t m_version   = 0;
     bool m_rebenchAlgo   = false;
     int  m_benchAlgoTime = 10;
+#   endif
 
 #   ifdef XMRIG_FEATURE_TLS
     TlsConfig m_tls;

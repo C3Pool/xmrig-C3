@@ -111,13 +111,14 @@ static AlgoName const algorithm_names[] = {
     { "RandomWOW",                 nullptr,            Algorithm::RX_WOW          },
     { "randomx/loki",              "rx/loki",          Algorithm::RX_LOKI         },
     { "RandomXL",                  nullptr,            Algorithm::RX_LOKI         },
-    { "DefyX",                     "defyx",            Algorithm::DEFYX           },
     { "randomx/arq",               "rx/arq",           Algorithm::RX_ARQ          },
     { "RandomARQ",                 nullptr,            Algorithm::RX_ARQ          },
     { "randomx/sfx",               "rx/sfx",           Algorithm::RX_SFX          },
     { "RandomSFX",                 nullptr,            Algorithm::RX_SFX          },
     { "randomx/keva",              "rx/keva",          Algorithm::RX_KEVA         },
     { "RandomKEVA",                nullptr,            Algorithm::RX_KEVA         },
+    { "defyx",                     "defyx",            Algorithm::RX_DEFYX        },
+    { "DefyX",                     nullptr,            Algorithm::RX_DEFYX        },
 #   endif
 #   ifdef XMRIG_ALGO_ARGON2
     { "argon2/chukwa",             nullptr,            Algorithm::AR2_CHUKWA      },
@@ -128,6 +129,12 @@ static AlgoName const algorithm_names[] = {
     { "astrobwt",                  nullptr,            Algorithm::ASTROBWT_DERO   },
     { "astrobwt/dero",             nullptr,            Algorithm::ASTROBWT_DERO   },
 #   endif
+#   ifdef XMRIG_ALGO_KAWPOW
+    { "kawpow",                    nullptr,            Algorithm::KAWPOW_RVN      },
+    { "kawpow/rvn",                nullptr,            Algorithm::KAWPOW_RVN      },
+#   endif
+    { "cryptonight/ccx",           "cn/ccx",           Algorithm::CN_CCX          },
+    { "cryptonight/conceal",       "cn/conceal",       Algorithm::CN_CCX          },
 };
 
 
@@ -153,9 +160,7 @@ size_t xmrig::Algorithm::l2() const
 
     case RX_WOW:
     case RX_KEVA:
-        return 0x20000;
-
-    case DEFYX:
+    case RX_DEFYX:
         return 0x20000;
 
     case RX_ARQ:
@@ -206,10 +211,8 @@ size_t xmrig::Algorithm::l3() const
         case RX_KEVA:
             return oneMiB;
 
-        case DEFYX:
-            return oneMiB / 4;
-
         case RX_ARQ:
+        case RX_DEFYX:
             return oneMiB / 4;
 
         default:
@@ -238,6 +241,18 @@ size_t xmrig::Algorithm::l3() const
         switch (m_id) {
         case ASTROBWT_DERO:
             return oneMiB * 20;
+
+        default:
+            break;
+        }
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_KAWPOW
+    if (f == KAWPOW) {
+        switch (m_id) {
+        case KAWPOW_RVN:
+            return 32768;
 
         default:
             break;
@@ -293,6 +308,7 @@ xmrig::Algorithm::Family xmrig::Algorithm::family(Id id)
     case CN_RWZ:
     case CN_ZLS:
     case CN_DOUBLE:
+    case CN_CCX:
 #   ifdef XMRIG_ALGO_CN_GPU
     case CN_GPU:
 #   endif
@@ -321,10 +337,10 @@ xmrig::Algorithm::Family xmrig::Algorithm::family(Id id)
     case RX_0:
     case RX_WOW:
     case RX_LOKI:
-    case DEFYX:
     case RX_ARQ:
     case RX_SFX:
     case RX_KEVA:
+    case RX_DEFYX:
         return RANDOM_X;
 #   endif
 
@@ -337,6 +353,11 @@ xmrig::Algorithm::Family xmrig::Algorithm::family(Id id)
 #   ifdef XMRIG_ALGO_ASTROBWT
     case ASTROBWT_DERO:
         return ASTROBWT;
+#   endif
+
+#   ifdef XMRIG_ALGO_KAWPOW
+    case KAWPOW_RVN:
+        return KAWPOW;
 #   endif
 
     default:

@@ -40,6 +40,11 @@
 #   include "backend/opencl/cl/astrobwt/astrobwt_cl.h"
 #endif
 
+#ifdef XMRIG_ALGO_KAWPOW
+#   include "backend/opencl/cl/kawpow/kawpow_cl.h"
+#   include "backend/opencl/cl/kawpow/kawpow_dag_cl.h"
+#endif
+
 
 const char *xmrig::OclSource::get(const Algorithm &algorithm)
 {
@@ -52,6 +57,12 @@ const char *xmrig::OclSource::get(const Algorithm &algorithm)
 #   ifdef XMRIG_ALGO_ASTROBWT
     if (algorithm.family() == Algorithm::ASTROBWT) {
         return astrobwt_cl;
+    }
+#   endif
+
+#   ifdef XMRIG_ALGO_KAWPOW
+    if (algorithm.family() == Algorithm::KAWPOW) {
+        return kawpow_dag_cl;
     }
 #   endif
 
