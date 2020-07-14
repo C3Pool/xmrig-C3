@@ -1,3 +1,43 @@
+# v6.2.3
+- [#1745](https://github.com/xmrig/xmrig/pull/1745) AstroBWT: fixed OpenCL compilation on some systems.
+- [#1749](https://github.com/xmrig/xmrig/pull/1749) KawPow: optimized CPU share verification.
+- [#1752](https://github.com/xmrig/xmrig/pull/1752) RandomX: added error message when MSR mod fails.
+- [#1754](https://github.com/xmrig/xmrig/issues/1754) Fixed GPU health readings for pre Vega GPUs on Linux.
+- [#1756](https://github.com/xmrig/xmrig/issues/1756) Added results and connection reports.
+- [#1759](https://github.com/xmrig/xmrig/pull/1759) KawPow: fixed DAG initialization on slower AMD GPUs.
+- [#1763](https://github.com/xmrig/xmrig/pull/1763) KawPow: fixed rare duplicate share errors.
+- [#1766](https://github.com/xmrig/xmrig/pull/1766) RandomX: small speedup on Ryzen CPUs.
+
+# v6.2.2
+- [#1742](https://github.com/xmrig/xmrig/issues/1742) Fixed crash when use HTTP API.
+
+# v6.2.1
+- [#1726](https://github.com/xmrig/xmrig/issues/1726) Fixed detection of AVX2/AVX512.
+- [#1728](https://github.com/xmrig/xmrig/issues/1728) Fixed, 32 bit Windows builds was crash on start.
+- [#1729](https://github.com/xmrig/xmrig/pull/1729) Fixed KawPow crash on old CPUs.
+- [#1730](https://github.com/xmrig/xmrig/pull/1730) Improved displaying information for compute errors on GPUs.
+- [#1732](https://github.com/xmrig/xmrig/pull/1732) Fixed NiceHash disconnects for KawPow.
+- Fixed AMD GPU health (temperatures/power/clocks/fans) readings on Linux.
+
+# v6.2.0-beta
+- [#1717](https://github.com/xmrig/xmrig/pull/1717) Added new algorithm `cn/ccx` for Conceal.
+- [#1718](https://github.com/xmrig/xmrig/pull/1718) Fixed, linker on Linux was marking entire executable as having an executable stack.
+- [#1720](https://github.com/xmrig/xmrig/pull/1720) Fixed broken CryptoNight algorithms family with gcc 10.1.
+
+# v6.0.1-beta
+- [#1708](https://github.com/xmrig/xmrig/issues/1708) Added `title` option.
+- [#1711](https://github.com/xmrig/xmrig/pull/1711) [cuda] Print errors from KawPow DAG initialization.
+- [#1713](https://github.com/xmrig/xmrig/pull/1713) [cuda] Reduced memory usage for KawPow, minimum CUDA plugin version now is 6.1.0.
+
+# v6.0.0-beta
+- [#1694](https://github.com/xmrig/xmrig/pull/1694) Added support for KawPow algorithm (Ravencoin) on AMD/NVIDIA.
+- Removed previously deprecated `cn/gpu` algorithm.
+- Default donation level reduced to 1% but you still can increase it if you like.
+
+# v5.11.3
+- [#1718](https://github.com/xmrig/xmrig/pull/1718) Fixed, linker on Linux was marking entire executable as having an executable stack.
+- [#1720](https://github.com/xmrig/xmrig/pull/1720) Fixed broken CryptoNight algorithms family with gcc 10.1.
+
 # v5.11.2
 - [#1664](https://github.com/xmrig/xmrig/pull/1664) Improved JSON config error reporting.
 - [#1668](https://github.com/xmrig/xmrig/pull/1668) Optimized RandomX dataset initialization.

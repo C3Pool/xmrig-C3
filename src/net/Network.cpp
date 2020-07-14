@@ -98,6 +98,25 @@ void xmrig::Network::connect()
 }
 
 
+void xmrig::Network::execCommand(char command)
+{
+    switch (command) {
+    case 's':
+    case 'S':
+        m_state->printResults();
+        break;
+
+    case 'c':
+    case 'C':
+        m_state->printConnection();
+        break;
+
+    default:
+        break;
+    }
+}
+
+
 void xmrig::Network::onActive(IStrategy *strategy, IClient *client)
 {
     if (m_donate && m_donate == strategy) {
@@ -176,15 +195,13 @@ void xmrig::Network::onLogin(IStrategy *, IClient *client, rapidjson::Document &
     params.AddMember("algo", algo, allocator);
 
 #   ifdef XMRIG_FEATURE_BENCHMARK
-    if (strstr(client->pool().host(), "moneroocean.stream")) {
-        Value algo_perf(kObjectType);
+    Value algo_perf(kObjectType);
 
-        for (const auto &a : algorithms) {
-            algo_perf.AddMember(StringRef(a.shortName()), m_controller->config()->benchmark().algo_perf[a.id()], allocator);
-        }
-
-        params.AddMember("algo-perf", algo_perf, allocator);
+    for (const auto &a : algorithms) {
+        algo_perf.AddMember(StringRef(a.shortName()), m_controller->config()->benchmark().algo_perf[a.id()], allocator);
     }
+
+    params.AddMember("algo-perf", algo_perf, allocator);
 #   endif
 }
 
@@ -204,24 +221,10 @@ void xmrig::Network::onPause(IStrategy *strategy)
 }
 
 
-static void scale_diff(uint64_t& diff, const char* &scale)
-{
-    if (diff >= 100000000) {
-        diff /= 1000000;
-        scale = "M";
-    }
-    else if (diff >= 1000000) {
-        diff /= 1000;
-        scale = "K";
-    }
-}
-
-
 void xmrig::Network::onResultAccepted(IStrategy *, IClient *, const SubmitResult &result, const char *error)
 {
-    uint64_t diff = result.diff;
-    const char* scale = "";
-    scale_diff(diff, scale);
+    uint64_t diff     = result.diff;
+    const char *scale = NetworkState::scaleDiff(diff);
 
     if (error) {
         LOG_INFO("%s " RED_BOLD("rejected") " (%" PRId64 "/%" PRId64 ") diff " WHITE_BOLD("%" PRIu64 "%s") " " RED("\"%s\"") " " BLACK_BOLD("(%" PRIu64 " ms)"),
@@ -259,9 +262,8 @@ void xmrig::Network::onRequest(IApiRequest &request)
 
 void xmrig::Network::setJob(IClient *client, const Job &job, bool donate)
 {
-    uint64_t diff = job.diff();
-    const char* scale = "";
-    scale_diff(diff, scale);
+    uint64_t diff     = job.diff();;
+    const char *scale = NetworkState::scaleDiff(diff);
 
     if (job.height()) {
         LOG_INFO("%s " MAGENTA_BOLD("new job") " from " WHITE_BOLD("%s:%d") " diff " WHITE_BOLD("%" PRIu64 "%s") " algo " WHITE_BOLD("%s") " height " WHITE_BOLD("%" PRIu64),

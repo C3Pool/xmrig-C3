@@ -83,7 +83,8 @@ xmrig::OclWorker::OclWorker(size_t id, const OclLaunchData &data) :
     m_algorithm(data.algorithm),
     m_miner(data.miner),
     m_intensity(data.thread.intensity()),
-    m_sharedData(OclSharedState::get(data.device.index()))
+    m_sharedData(OclSharedState::get(data.device.index())),
+    m_deviceIndex(data.device.index())
 {
     switch (m_algorithm.family()) {
     case Algorithm::RANDOM_X:
@@ -115,14 +116,16 @@ xmrig::OclWorker::OclWorker(size_t id, const OclLaunchData &data) :
 #       endif
         break;
 
-    case Algorithm::CN_GPU:
-#       ifdef XMRIG_ALGO_CN_GPU
-        m_runner = new OclRyoRunner(id, data);
-#       endif
-        break;
-
     default:
-        m_runner = new OclCnRunner(id, data);
+#       ifdef XMRIG_ALGO_CN_GPU
+        if (m_algorithm == Algorithm::CN_GPU) {
+            m_runner = new OclRyoRunner(id, data);
+        }
+        else
+#       endif
+        {
+            m_runner = new OclCnRunner(id, data);
+        }
         break;
     }
 
@@ -210,7 +213,7 @@ void xmrig::OclWorker::start()
             }
 
             if (results[0xFF] > 0) {
-                JobResults::submit(m_job.currentJob(), results, results[0xFF]);
+                JobResults::submit(m_job.currentJob(), results, results[0xFF], m_deviceIndex);
             }
 
             if (!Nonce::isOutdated(Nonce::OPENCL, m_job.sequence()) && !m_job.nextRound(roundSize(runnerRoundSize), runnerRoundSize)) {
