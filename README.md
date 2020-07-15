@@ -1,25 +1,25 @@
 # XMRig
 
-[![Github All Releases](https://img.shields.io/github/downloads/xmrig/xmrig/total.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub release](https://img.shields.io/github/release/xmrig/xmrig/all.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date-pre/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/releases)
-[![GitHub license](https://img.shields.io/github/license/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/blob/master/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/xmrig/xmrig.svg)](https://github.com/xmrig/xmrig/network)
+[![Github All Releases](https://img.shields.io/github/downloads/xmrig/xmrig/total.svg)](https://github.com/C3Pool/xmrig/releases)
+[![GitHub release](https://img.shields.io/github/release/xmrig/xmrig/all.svg)](https://github.com/C3Pool/xmrig/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date-pre/xmrig/xmrig.svg)](https://github.com/C3Pool/xmrig/releases)
+[![GitHub license](https://img.shields.io/github/license/xmrig/xmrig.svg)](https://github.com/C3Pool/xmrig/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/xmrig/xmrig.svg)](https://github.com/C3Pool/xmrig/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/xmrig/xmrig.svg)](https://github.com/C3Pool/xmrig/network)
 
 XMRig High performance, open source, cross platform RandomX, KawPow, CryptoNight, AstroBWT and Argon2 CPU/GPU miner, with official support for Windows.
 
 ## Mining backends
 - **CPU** (x64/x86/ARM)
 - **OpenCL** for AMD GPUs.
-- **CUDA** for NVIDIA GPUs via external [CUDA plugin](https://github.com/xmrig/xmrig-cuda).
+- **CUDA** for NVIDIA GPUs via external [CUDA plugin](https://github.com/C3Pool/xmrig-cuda).
 
 <img src="doc/screenshot_v5_2_0.png" width="833" >
 
 ## Download
-* Binary releases: https://github.com/xmrig/xmrig/releases
-* Git tree: https://github.com/xmrig/xmrig.git
-  * Clone with `git clone https://github.com/xmrig/xmrig.git` :hammer: [Build instructions](https://github.com/xmrig/xmrig/wiki/Build).
+* Binary releases: https://github.com/C3Pool/xmrig/releases
+* Git tree: https://github.com/C3Pool/xmrig.git
+  * Clone with `git clone https://github.com/C3Pool/xmrig.git` :hammer: [Build instructions](https://github.com/C3Pool/xmrig/wiki/Build).
 
 ## Usage
 The preferred way to configure the miner is the [JSON config file](src/config.json) as it is more flexible and human friendly. The command line interface does not cover all features, such as mining profiles for different algorithms. Important options can be changed during runtime without miner restart by editing the config file or executing API calls.
