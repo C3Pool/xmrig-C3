@@ -180,7 +180,7 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/xmrig_setup.git
           cd xmrig_setup
           git config user.name  C3Pool
-          git config user.email support@C3Pool.com
+          git config user.email support@c3pool.com
           mv ../centos6_build/centos6_build.tar.gz xmrig.tar.gz
           mv ../windows_build/windows_build.zip xmrig.zip
           unzip xmrig.zip
