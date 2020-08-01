@@ -46,12 +46,6 @@ const char *ocl_tag();
 const char *cuda_tag();
 #endif
 
-
-#ifdef XMRIG_ALGO_RANDOMX
-const char *rx_tag();
-#endif
-
-
 #ifdef XMRIG_FEATURE_BENCHMARK
 const char *bm_tag();
 #endif
