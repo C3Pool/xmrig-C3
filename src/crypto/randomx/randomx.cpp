@@ -82,18 +82,6 @@ RandomX_ConfigurationWownero::RandomX_ConfigurationWownero()
 	fillAes4Rx4_Key[7] = fillAes4Rx4_Key[3];
 }
 
-RandomX_ConfigurationLoki::RandomX_ConfigurationLoki()
-{
-	ArgonIterations = 4;
-	ArgonLanes = 2;
-	ArgonSalt = "RandomXL\x12";
-	ProgramSize = 320;
-	ProgramCount = 7;
-
-	RANDOMX_FREQ_IADD_RS = 25;
-	RANDOMX_FREQ_CBRANCH = 16;
-}
-
 RandomX_ConfigurationArqma::RandomX_ConfigurationArqma()
 {
 	ArgonIterations = 1;
@@ -399,7 +387,6 @@ typedef void(randomx::JitCompilerX86::* InstructionGeneratorX86_2)(const randomx
 
 RandomX_ConfigurationMonero RandomX_MoneroConfig;
 RandomX_ConfigurationWownero RandomX_WowneroConfig;
-RandomX_ConfigurationLoki RandomX_LokiConfig;
 RandomX_ConfigurationArqma RandomX_ArqmaConfig;
 RandomX_ConfigurationSafex RandomX_SafexConfig;
 RandomX_ConfigurationKeva RandomX_KevaConfig;
@@ -457,7 +444,7 @@ extern "C" {
 					break;
 
 				case RANDOMX_FLAG_JIT:
-					cache->jit          = new randomx::JitCompiler();
+					cache->jit          = new randomx::JitCompiler(false);
 					cache->initialize   = &randomx::initCacheCompile;
 					cache->datasetInit  = cache->jit->getDatasetInitFunc();
 					cache->memory       = memory;
@@ -643,7 +630,6 @@ extern "C" {
 		assert(output != nullptr);
 		alignas(16) uint64_t tempHash[8];
                 switch (algo) {
-		    case xmrig::Algorithm::RX_DEFYX: rx_sipesh_k12(tempHash, sizeof(tempHash), input, inputSize); break;
                     case xmrig::Algorithm::RX_XLA:   rx_yespower_k12(tempHash, sizeof(tempHash), input, inputSize); break;
 		    default: rx_blake2b_wrapper::run(tempHash, sizeof(tempHash), input, inputSize);
 		}
@@ -659,7 +645,6 @@ extern "C" {
 
 	void randomx_calculate_hash_first(randomx_vm* machine, uint64_t (&tempHash)[8], const void* input, size_t inputSize, const xmrig::Algorithm algo) {
                 switch (algo) {
-		    case xmrig::Algorithm::RX_DEFYX: rx_sipesh_k12(tempHash, sizeof(tempHash), input, inputSize); break;
                     case xmrig::Algorithm::RX_XLA:   rx_yespower_k12(tempHash, sizeof(tempHash), input, inputSize); break;
 		    default: rx_blake2b_wrapper::run(tempHash, sizeof(tempHash), input, inputSize);
 		}
@@ -678,7 +663,6 @@ extern "C" {
 
 		// Finish current hash and fill the scratchpad for the next hash at the same time
                 switch (algo) {
-		    case xmrig::Algorithm::RX_DEFYX: rx_sipesh_k12(tempHash, sizeof(tempHash), nextInput, nextInputSize); break;
                     case xmrig::Algorithm::RX_XLA:   rx_yespower_k12(tempHash, sizeof(tempHash), nextInput, nextInputSize); break;
 		    default: rx_blake2b_wrapper::run(tempHash, sizeof(tempHash), nextInput, nextInputSize);
 		}

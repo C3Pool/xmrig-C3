@@ -43,9 +43,6 @@ const RandomX_ConfigurationBase *xmrig::RxAlgo::base(Algorithm::Id algorithm)
     case Algorithm::RX_WOW:
         return &RandomX_WowneroConfig;
 
-    case Algorithm::RX_LOKI:
-        return &RandomX_LokiConfig;
-
     case Algorithm::RX_ARQ:
         return &RandomX_ArqmaConfig;
 
@@ -54,9 +51,6 @@ const RandomX_ConfigurationBase *xmrig::RxAlgo::base(Algorithm::Id algorithm)
 
     case Algorithm::RX_KEVA:
         return &RandomX_KevaConfig;
-
-    case Algorithm::RX_DEFYX:
-        return &RandomX_ScalaConfig;
 
     case Algorithm::RX_XLA:
         return &RandomX_Scala2Config;

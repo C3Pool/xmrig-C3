@@ -34,7 +34,7 @@
 #include "base/kernel/config/BaseConfig.h"
 #include "base/tools/Object.h"
 #ifdef XMRIG_FEATURE_BENCHMARK
-#include "core/Benchmark.h"
+#include "core/MoBenchmark.h"
 #endif
 
 
@@ -81,13 +81,13 @@ public:
     void getJSON(rapidjson::Document &doc) const override;
 
 #   ifdef XMRIG_FEATURE_BENCHMARK
-    inline Benchmark &benchmark()           { return m_benchmark; }
+    inline MoBenchmark &benchmark()           { return m_benchmark; }
 #   endif
 
 private:
     ConfigPrivate *d_ptr;
 #   ifdef XMRIG_FEATURE_BENCHMARK
-    Benchmark m_benchmark;
+    MoBenchmark m_benchmark;
 #   endif
 };
 
