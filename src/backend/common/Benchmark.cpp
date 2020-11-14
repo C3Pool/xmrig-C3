@@ -37,9 +37,35 @@
 namespace xmrig {
 
 
-static uint64_t hashCheck[2][10] = {
-    { 0x898B6E0431C28A6BULL, 0xEE9468F8B40926BCULL, 0xC2BC5D11724813C0ULL, 0x3A2C7B285B87F941ULL, 0x3B5BD2C3A16B450EULL, 0x5CD0602F20C5C7C4ULL, 0x101DE939474B6812ULL, 0x52B765A1B156C6ECULL, 0x323935102AB6B45CULL, 0xB5231262E2792B26ULL },
-    { 0x0F3E5400B39EA96AULL, 0x85944CCFA2752D1FULL, 0x64AFFCAE991811BAULL, 0x3E4D0B836D3B13BAULL, 0xEB7417D621271166ULL, 0x97FFE10C0949FFA5ULL, 0x84CAC0F8879A4BA1ULL, 0xA1B79F031DA2459FULL, 0x9B65226DA873E65DULL, 0x0F9E00C5A511C200ULL },
+static const std::map<int, std::map<uint32_t, uint64_t> > hashCheck = {
+    { Algorithm::RX_0, {
+        {   250000U, 0x7D6054757BB08A63ULL },
+        {   500000U, 0x96607546DE1F5ECCULL },
+        {  1000000U, 0x898B6E0431C28A6BULL },
+        {  2000000U, 0xEE9468F8B40926BCULL },
+        {  3000000U, 0xC2BC5D11724813C0ULL },
+        {  4000000U, 0x3A2C7B285B87F941ULL },
+        {  5000000U, 0x3B5BD2C3A16B450EULL },
+        {  6000000U, 0x5CD0602F20C5C7C4ULL },
+        {  7000000U, 0x101DE939474B6812ULL },
+        {  8000000U, 0x52B765A1B156C6ECULL },
+        {  9000000U, 0x323935102AB6B45CULL },
+        { 10000000U, 0xB5231262E2792B26ULL }
+    }},
+    { Algorithm::RX_WOW, {
+        {   250000U, 0xC7F712C9603E2603ULL },
+        {   500000U, 0x21A0E5AAE6DA7D8DULL },
+        {  1000000U, 0x0F3E5400B39EA96AULL },
+        {  2000000U, 0x85944CCFA2752D1FULL },
+        {  3000000U, 0x64AFFCAE991811BAULL },
+        {  4000000U, 0x3E4D0B836D3B13BAULL },
+        {  5000000U, 0xEB7417D621271166ULL },
+        {  6000000U, 0x97FFE10C0949FFA5ULL },
+        {  7000000U, 0x84CAC0F8879A4BA1ULL },
+        {  8000000U, 0xA1B79F031DA2459FULL },
+        {  9000000U, 0x9B65226DA873E65DULL },
+        { 10000000U, 0x0F9E00C5A511C200ULL }
+    }}
 };
 
 
@@ -55,9 +81,11 @@ xmrig::Benchmark::Benchmark(const Job &job, size_t workers, const IBackend *back
     m_end(job.benchSize()),
     m_hash(job.benchHash())
 {
+#   ifdef XMRIG_FEATURE_HTTP
     if (!m_token.isEmpty()) {
         m_httpListener = std::make_shared<HttpListener>(this, Tags::bench());
     }
+#   endif
 }
 
 
@@ -76,6 +104,7 @@ bool xmrig::Benchmark::finish(uint64_t totalHashCount)
 
     LOG_NOTICE("%s " WHITE_BOLD("benchmark finished in ") CYAN_BOLD("%.3f seconds") WHITE_BOLD_S " hash sum = " CLEAR "%s%016" PRIX64 CLEAR, Tags::bench(), dt, color, m_data);
 
+#   ifdef XMRIG_FEATURE_HTTP
     if (!m_token.isEmpty()) {
         using namespace rapidjson;
 
@@ -88,7 +117,9 @@ bool xmrig::Benchmark::finish(uint64_t totalHashCount)
 
         send(doc);
     }
-    else {
+    else
+#   endif
+    {
         printExit();
     }
 
@@ -100,6 +131,7 @@ void xmrig::Benchmark::start()
 {
     m_startTime = Chrono::steadyMSecs();
 
+#   ifdef XMRIG_FEATURE_HTTP
     if (!m_token.isEmpty()) {
         using namespace rapidjson;
 
@@ -108,6 +140,7 @@ void xmrig::Benchmark::start()
 
         send(doc);
     }
+#   endif
 }
 
 
@@ -145,6 +178,7 @@ void xmrig::Benchmark::tick(IWorker *worker)
 
 void xmrig::Benchmark::onHttpData(const HttpData &data)
 {
+#   ifdef XMRIG_FEATURE_HTTP
     rapidjson::Document doc;
 
     try {
@@ -161,6 +195,7 @@ void xmrig::Benchmark::onHttpData(const HttpData &data)
         LOG_NOTICE("%s " WHITE_BOLD("benchmark submitted ") CYAN_BOLD("https://xmrig.com/benchmark/%s"), Tags::bench(), m_id.data());
         printExit();
     }
+#   endif
 }
 
 
@@ -170,16 +205,19 @@ uint64_t xmrig::Benchmark::referenceHash() const
         return m_hash;
     }
 
+#   ifdef XMRIG_FEATURE_HTTP
     if (!m_token.isEmpty()) {
         return 0;
     }
+#   endif
 
-    const uint32_t N = (m_end / 1000000) - 1;
-    if (((m_algo == Algorithm::RX_0) || (m_algo == Algorithm::RX_WOW)) && ((m_end % 1000000) == 0) && (N < 10)) {
-        return hashCheck[(m_algo == Algorithm::RX_0) ? 0 : 1][N];
-    }
+    uint64_t hash = 0;
 
-    return 0;
+    try {
+        hash = hashCheck.at(m_algo).at(m_end);
+    } catch (const std::exception &ex) {}
+
+    return hash;
 }
 
 
@@ -189,6 +227,7 @@ void xmrig::Benchmark::printExit()
 }
 
 
+#ifdef XMRIG_FEATURE_HTTP
 void xmrig::Benchmark::send(const rapidjson::Value &body)
 {
     FetchRequest req(HTTP_PATCH, BenchConfig::kApiHost, BenchConfig::kApiPort, fmt::format("/1/benchmark/{}", m_id).c_str(), body, BenchConfig::kApiTLS, true);
@@ -202,3 +241,4 @@ void xmrig::Benchmark::setError(const char *message)
 {
     LOG_ERR("%s " RED("benchmark failed ") RED_BOLD("\"%s\""), Tags::bench(), message);
 }
+#endif
