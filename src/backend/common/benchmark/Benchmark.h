@@ -1,6 +1,4 @@
 /* XMRig
- * Copyright (c) 2015-2020 libuv project contributors.
- * Copyright (c) 2020      cohcho      <https://github.com/cohcho>
  * Copyright (c) 2018-2020 SChernykh   <https://github.com/SChernykh>
  * Copyright (c) 2016-2020 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
@@ -18,42 +16,40 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef XMRIG_ASYNC_H
-#define XMRIG_ASYNC_H
+#ifndef XMRIG_BENCHMARK_H
+#define XMRIG_BENCHMARK_H
 
 
 #include "base/tools/Object.h"
 
 
-#include <functional>
-
-
 namespace xmrig {
 
 
-class AsyncPrivate;
-class IAsyncListener;
+class IBackend;
 
 
-class Async
+class Benchmark
 {
 public:
-    XMRIG_DISABLE_COPY_MOVE_DEFAULT(Async)
+    XMRIG_DISABLE_COPY_MOVE_DEFAULT(Benchmark)
 
-    using Callback = std::function<void()>;
+    Benchmark(size_t workers, const IBackend *backend);
+    ~Benchmark() = default;
 
-    Async(Callback callback);
-    Async(IAsyncListener *listener);
-    ~Async();
-
-    void send();
+    bool finish(uint64_t totalHashCount);
+    void printProgress() const;
+    void start();
 
 private:
-    AsyncPrivate *d_ptr;
+    const IBackend *m_backend;
+    const size_t m_workers;
+    uint64_t m_current          = 0;
+    uint64_t m_startTime        = 0;
 };
 
 
 } // namespace xmrig
 
 
-#endif /* XMRIG_ASYNC_H */
+#endif /* XMRIG_BENCHMARK_H */
