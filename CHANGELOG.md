@@ -1,3 +1,60 @@
+# v6.6.1
+- Fixed, benchmark validation on NUMA hardware produced incorrect results in some conditions.
+
+# v6.6.0
+- Online benchmark protocol upgraded to v2, validation not compatible with previous versions.
+  - Single thread benchmark now is cheat-resistant, not possible speedup it with multiple threads.
+  - RandomX dataset is now always initialized with static seed, to prevent time cheat by report slow dataset initialization.
+  - Zero delay online submission, to make time validation much more precise and strict.
+  - DNS cache for online benchmark to prevent unexpected delays.
+
+# v6.5.3
+- [#1946](https://github.com/xmrig/xmrig/pull/1946) Fixed MSR mod names in JSON API (v6.5.2 affected).
+
+# v6.5.2
+- [#1935](https://github.com/xmrig/xmrig/pull/1935) Separate MSR mod for Zen/Zen2 and Zen3.
+- [#1937](https://github.com/xmrig/xmrig/issues/1937) Print path to existing WinRing0 service without verbose option.
+- [#1939](https://github.com/xmrig/xmrig/pull/1939) Fixed build with gcc 4.8.
+- [#1941](https://github.com/xmrig/xmrig/pull/1941) Added CPUID info to JSON report.
+- [#1941](https://github.com/xmrig/xmrig/pull/1942) Fixed alignment modification in memory pool.
+- [#1944](https://github.com/xmrig/xmrig/pull/1944) Updated `randomx_boost.sh` with new MSR mod.
+- Added `250K` and `500K` offline benchmarks.
+
+# v6.5.1
+- [#1932](https://github.com/xmrig/xmrig/pull/1932) New MSR mod for Ryzen, up to +3.5% on Zen2 and +1-2% on Zen3.
+- [#1918](https://github.com/xmrig/xmrig/issues/1918) Fixed 1GB huge pages support on ARMv8.
+- [#1926](https://github.com/xmrig/xmrig/pull/1926) Fixed compilation on ARMv8 with GCC 9.3.0.
+- [#1929](https://github.com/xmrig/xmrig/issues/1929) Fixed build without HTTP.
+
+# v6.5.0
+- **Added [online benchmark](https://xmrig.com/benchmark) mode for sharing results.**
+  - Added new command line options: `--submit`, `	--verify=ID`, `	--seed=SEED`, `--hash=HASH`.
+- [#1912](https://github.com/xmrig/xmrig/pull/1912) Fixed MSR kernel module warning with new Linux kernels.
+- [#1925](https://github.com/xmrig/xmrig/pull/1925) Add checking for config files in user home directory.
+- Added vendor to ARM CPUs name and added `"arch"` field to API.
+- Removed legacy CUDA plugin API.
+
+# v6.4.0
+- [#1862](https://github.com/xmrig/xmrig/pull/1862) **RandomX: removed `rx/loki` algorithm.**
+- [#1890](https://github.com/xmrig/xmrig/pull/1890) **Added `argon2/chukwav2` algorithm.**
+- [#1895](https://github.com/xmrig/xmrig/pull/1895) [#1897](https://github.com/xmrig/xmrig/pull/1897) **Added [benchmark and stress test](https://github.com/xmrig/xmrig/blob/dev/doc/BENCHMARK.md).**
+- [#1864](https://github.com/xmrig/xmrig/pull/1864) RandomX: improved software AES performance.
+- [#1870](https://github.com/xmrig/xmrig/pull/1870) RandomX: fixed unexpected resume due to disconnect during dataset init.
+- [#1872](https://github.com/xmrig/xmrig/pull/1872) RandomX: fixed `randomx_create_vm` call.
+- [#1875](https://github.com/xmrig/xmrig/pull/1875) RandomX: fixed crash on x86.
+- [#1876](https://github.com/xmrig/xmrig/pull/1876) RandomX: added `huge-pages-jit` config parameter.
+- [#1881](https://github.com/xmrig/xmrig/pull/1881) Fixed possible race condition in hashrate counting code.
+- [#1882](https://github.com/xmrig/xmrig/pull/1882) [#1886](https://github.com/xmrig/xmrig/pull/1886) [#1887](https://github.com/xmrig/xmrig/pull/1887) [#1893](https://github.com/xmrig/xmrig/pull/1893) General code improvements.
+- [#1885](https://github.com/xmrig/xmrig/pull/1885) Added more precise hashrate calculation.
+- [#1889](https://github.com/xmrig/xmrig/pull/1889) Fixed libuv performance issue on Linux.
+
+# v6.3.5
+- [#1845](https://github.com/xmrig/xmrig/pull/1845) [#1861](https://github.com/xmrig/xmrig/pull/1861) Fixed ARM build and added CMake option `WITH_SSE4_1`.
+- [#1846](https://github.com/xmrig/xmrig/pull/1846) KawPow: fixed OpenCL memory leak.
+- [#1849](https://github.com/xmrig/xmrig/pull/1849) [#1859](https://github.com/xmrig/xmrig/pull/1859) RandomX: optimized soft AES code.
+- [#1850](https://github.com/xmrig/xmrig/pull/1850) [#1852](https://github.com/xmrig/xmrig/pull/1852) General code improvements.
+- [#1853](https://github.com/xmrig/xmrig/issues/1853) [#1856](https://github.com/xmrig/xmrig/pull/1856) [#1857](https://github.com/xmrig/xmrig/pull/1857) Fixed crash on old CPUs.
+
 # v6.3.4
 - [#1823](https://github.com/xmrig/xmrig/pull/1823) RandomX: added new option `scratchpad_prefetch_mode`.
 - [#1827](https://github.com/xmrig/xmrig/pull/1827) [#1831](https://github.com/xmrig/xmrig/pull/1831) Improved nonce iteration performance.
