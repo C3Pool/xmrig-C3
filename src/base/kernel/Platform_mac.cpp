@@ -1,11 +1,6 @@
 /* XMRig
- * Copyright 2010      Jeff Garzik <jgarzik@pobox.com>
- * Copyright 2012-2014 pooler      <pooler@litecoinpool.org>
- * Copyright 2014      Lucas Jones <https://github.com/lucasjones>
- * Copyright 2014-2016 Wolf9466    <https://github.com/OhGodAPet>
- * Copyright 2016      Jay D Dee   <jayddee246@gmail.com>
- * Copyright 2018-2020 SChernykh   <https://github.com/SChernykh>
- * Copyright 2016-2020 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+ * Copyright (c) 2018-2020 SChernykh   <https://github.com/SChernykh>
+ * Copyright (c) 2016-2020 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,8 +19,6 @@
 
 #include <IOKit/IOKitLib.h>
 #include <IOKit/ps/IOPowerSources.h>
-#include <mach/thread_act.h>
-#include <mach/thread_policy.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/resource.h>
@@ -43,7 +36,14 @@ char *xmrig::Platform::createUserAgent()
     constexpr const size_t max = 256;
 
     char *buf = new char[max]();
-    int length = snprintf(buf, max, "%s/%s (Macintosh; Intel Mac OS X) libuv/%s", APP_NAME, APP_VERSION, uv_version_string());
+    int length = snprintf(buf, max,
+                          "%s/%s (Macintosh; macOS"
+#                         ifdef XMRIG_ARM
+                          "; arm64"
+#                         else
+                          "; x86_64"
+#                         endif
+                          ") libuv/%s", APP_NAME, APP_VERSION, uv_version_string());
 
 #   ifdef __clang__
     length += snprintf(buf + length, max - length, " clang/%d.%d.%d", __clang_major__, __clang_minor__, __clang_patchlevel__);
@@ -55,18 +55,10 @@ char *xmrig::Platform::createUserAgent()
 }
 
 
-#ifndef XMRIG_FEATURE_HWLOC
 bool xmrig::Platform::setThreadAffinity(uint64_t cpu_id)
 {
-    thread_port_t mach_thread;
-    thread_affinity_policy_data_t policy = { static_cast<integer_t>(cpu_id) };
-    mach_thread = pthread_mach_thread_np(pthread_self());
-
-    const bool result = (thread_policy_set(mach_thread, THREAD_AFFINITY_POLICY, (thread_policy_t)&policy, 1) == KERN_SUCCESS);
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    return result;
+    return true;
 }
-#endif
 
 
 void xmrig::Platform::setProcessPriority(int)
