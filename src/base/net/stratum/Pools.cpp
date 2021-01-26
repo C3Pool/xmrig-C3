@@ -134,7 +134,7 @@ void xmrig::Pools::load(const IJsonReader &reader)
     m_data.clear();
 
 #   ifdef XMRIG_FEATURE_BENCHMARK
-    m_benchmark = std::shared_ptr<BenchConfig>(BenchConfig::create(reader.getObject(BenchConfig::kBenchmark)));
+    m_benchmark = std::shared_ptr<BenchConfig>(BenchConfig::create(reader.getObject(BenchConfig::kBenchmark), reader.getBool("dmi", true)));
     if (m_benchmark) {
         m_data.emplace_back(m_benchmark);
 
