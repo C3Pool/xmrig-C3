@@ -1,6 +1,7 @@
 /* XMRig
- * Copyright 2018-2021 SChernykh   <https://github.com/SChernykh>
- * Copyright 2016-2021 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+ * Copyright (c) 2018-2019 tevador     <tevador@gmail.com>
+ * Copyright (c) 2018-2021 SChernykh   <https://github.com/SChernykh>
+ * Copyright (c) 2016-2021 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,32 +17,26 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef XMRIG_IBASELISTENER_H
-#define XMRIG_IBASELISTENER_H
+#ifndef XMRIG_RXFIX_H
+#define XMRIG_RXFIX_H
 
 
-#include "base/tools/Object.h"
+#include <utility>
 
 
-namespace xmrig {
+namespace xmrig
+{
 
 
-class Config;
-
-
-class IBaseListener
+class RxFix
 {
 public:
-    XMRIG_DISABLE_COPY_MOVE(IBaseListener)
-
-    IBaseListener()             = default;
-    virtual ~IBaseListener()    = default;
-
-    virtual void onConfigChanged(Config *config, Config *previousConfig) = 0;
+    static void setMainLoopBounds(const std::pair<const void *, const void *> &bounds);
+    static void setupMainLoopExceptionFrame();
 };
 
 
 } /* namespace xmrig */
 
 
-#endif // XMRIG_IBASELISTENER_H
+#endif /* XMRIG_RXFIX_H */

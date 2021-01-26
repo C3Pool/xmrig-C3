@@ -1,6 +1,7 @@
 /* XMRig
- * Copyright 2018-2021 SChernykh   <https://github.com/SChernykh>
- * Copyright 2016-2021 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
+ * Copyright (c) 2018-2019 tevador     <tevador@gmail.com>
+ * Copyright (c) 2018-2021 SChernykh   <https://github.com/SChernykh>
+ * Copyright (c) 2016-2021 XMRig       <https://github.com/xmrig>, <support@xmrig.com>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,32 +17,38 @@
  *   along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef XMRIG_IBASELISTENER_H
-#define XMRIG_IBASELISTENER_H
+#ifndef XMRIG_RXMSR_H
+#define XMRIG_RXMSR_H
 
 
-#include "base/tools/Object.h"
+#include <vector>
 
 
-namespace xmrig {
+namespace xmrig
+{
 
 
-class Config;
+class CpuThread;
+class RxConfig;
 
 
-class IBaseListener
+class RxMsr
 {
 public:
-    XMRIG_DISABLE_COPY_MOVE(IBaseListener)
+    static inline bool isEnabled()      { return m_enabled; }
+    static inline bool isInitialized()  { return m_initialized; }
 
-    IBaseListener()             = default;
-    virtual ~IBaseListener()    = default;
+    static bool init(const RxConfig &config, const std::vector<CpuThread> &threads);
+    static void destroy();
 
-    virtual void onConfigChanged(Config *config, Config *previousConfig) = 0;
+private:
+    static bool m_cacheQoS;
+    static bool m_enabled;
+    static bool m_initialized;
 };
 
 
 } /* namespace xmrig */
 
 
-#endif // XMRIG_IBASELISTENER_H
+#endif /* XMRIG_RXMSR_H */

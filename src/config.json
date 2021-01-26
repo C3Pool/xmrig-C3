@@ -16,6 +16,7 @@
     "title": true,
     "randomx": {
         "init": -1,
+        "init-avx2": -1,
         "mode": "auto",
         "1gb-pages": false,
         "rdmsr": true,
@@ -56,7 +57,8 @@
         "nvml": true,
         "cn/0": false,
         "cn-lite/0": false,
-        "panthera": false
+        "panthera": false,
+        "astrobwt": false
     },
     "donate-level": 1,
     "donate-over-proxy": 1,
@@ -81,6 +83,7 @@
     ],
     "print-time": 60,
     "health-print-time": 60,
+    "dmi": true,
     "retries": 5,
     "retry-pause": 5,
     "syslog": false,
