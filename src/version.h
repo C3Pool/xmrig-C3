@@ -35,8 +35,8 @@
 #define APP_KIND      "miner"
 
 #define APP_VER_MAJOR  6
-#define APP_VER_MINOR  7
-#define APP_VER_PATCH  2
+#define APP_VER_MINOR  8
+#define APP_VER_PATCH  0
 
 #ifdef _MSC_VER
 #   if (_MSC_VER >= 1920)
