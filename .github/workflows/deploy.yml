@@ -33,7 +33,8 @@ jobs:
     steps:
       - name: Prepare Ubuntu tools
         run: |
-          sudo apt-get install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
+          sudo apt update
+          sudo apt install -y git build-essential cmake libuv1-dev libssl-dev libhwloc-dev
       - name: Checkout code
         uses: actions/checkout@master
       - name: Build project on Ubuntu
@@ -86,7 +87,7 @@ jobs:
         run: |
           yum install -y centos-release-scl epel-release
           yum install -y devtoolset-9
-          yum install -y git cmake libstdc++-static openssl-devel libmicrohttpd-devel libuv-devel glibc-static libuv-static
+          yum install -y wget git cmake3 automake libtool autoconf libstdc++-static glibc-static
       - name: Checkout code
         run: |
           git clone https://github.com/C3Pool/xmrig.git .
@@ -94,10 +95,12 @@ jobs:
       - name: Build project on CentOS 7
         run: |
           source /opt/rh/devtoolset-9/enable
-          cmake . -DWITH_TLS=OFF -DWITH_HWLOC=OFF
+          cd scripts
+          ./build_deps.sh
+          cd ..
+          cmake3 . -DXMRIG_DEPS=scripts/deps
           make -j$(nproc)
           cp src/config.json .
-          mv xmrig-notls xmrig
           tar cfz centos7_build.tar.gz xmrig config.json
       - name: Upload CentOS 7 build artifacts
         uses: actions/upload-artifact@v1
@@ -197,7 +200,9 @@ jobs:
           tar xf ../centos7_build/centos7_build.tar.gz
           mv xmrig cat_xmrig/xmrig
           mv config.json cat_xmrig/config_global.json
-          tar -zcvf cat_xmrig-${GITHUB_REF:10}.tar.gz cat_xmrig
-          git add cat_xmrig-${GITHUB_REF:10}.tar.gz cat_xmrig/xmrig cat_xmrig/config_global.json
-          git commit -m "xmrig "${GITHUB_REF:10}" based release" cat_xmrig-${GITHUB_REF:10}.tar.gz
+          export VER=${GITHUB_REF:10}
+          export VER=${VER//-/_}
+          tar -zcvf cat_xmrig-$VER.tar.gz cat_xmrig
+          git add cat_xmrig-$VER.tar.gz cat_xmrig/xmrig cat_xmrig/config_global.json
+          git commit -m "xmrig "${GITHUB_REF:10}" based release" cat_xmrig-$VER.tar.gz
           git push
