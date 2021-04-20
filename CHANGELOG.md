@@ -1,3 +1,15 @@
+# v6.12.0
+- [#2276](https://github.com/xmrig/xmrig/pull/2276) Added support for Uplexa (`cn/upx2` algorithm).
+- [#2261](https://github.com/xmrig/xmrig/pull/2261) Show total hashrate if compiled without OpenCL.
+- [#2289](https://github.com/xmrig/xmrig/pull/2289) RandomX: optimized `IMUL_RCP` instruction.
+- Added support for `--user` command line option for online benchmark.
+
+# v6.11.2
+- [#2207](https://github.com/xmrig/xmrig/issues/2207) Fixed regression in HTTP parser and llhttp updated to v5.1.0.
+
+# v6.11.1
+- [#2239](https://github.com/xmrig/xmrig/pull/2239) Fixed broken `coin` setting functionality.
+
 # v6.11.0
 - [#2196](https://github.com/xmrig/xmrig/pull/2196) Improved DNS subsystem and added new DNS specific options.
 - [#2172](https://github.com/xmrig/xmrig/pull/2172) Fixed build on Alpine 3.13.
