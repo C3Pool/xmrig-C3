@@ -377,12 +377,15 @@ static inline void cn_explode_scratchpad(const __m128i *input, __m128i *output)
         _mm_store_si128(output + 1, xin1);
         _mm_store_si128(output + 2, xin2);
         _mm_store_si128(output + 3, xin3);
-        output += (64 << interleave) / sizeof(__m128i);
-        _mm_store_si128(output + 0, xin4);
-        _mm_store_si128(output + 1, xin5);
-        _mm_store_si128(output + 2, xin6);
-        _mm_store_si128(output + 3, xin7);
-        output += (64 << interleave) / sizeof(__m128i);
+
+        constexpr int output_increment = (64 << interleave) / sizeof(__m128i);
+
+        _mm_store_si128(output + output_increment + 0, xin4);
+        _mm_store_si128(output + output_increment + 1, xin5);
+        _mm_store_si128(output + output_increment + 2, xin6);
+        _mm_store_si128(output + output_increment + 3, xin7);
+
+        output += output_increment * 2;
     }
 }
 
@@ -418,13 +421,15 @@ static inline void cn_implode_scratchpad(const __m128i *input, __m128i *output)
         xout1 = _mm_xor_si128(_mm_load_si128(input + 1), xout1);
         xout2 = _mm_xor_si128(_mm_load_si128(input + 2), xout2);
         xout3 = _mm_xor_si128(_mm_load_si128(input + 3), xout3);
-        input += (64 << interleave) / sizeof(__m128i);
-        xout4 = _mm_xor_si128(_mm_load_si128(input + 0), xout4);
-        xout5 = _mm_xor_si128(_mm_load_si128(input + 1), xout5);
-        xout6 = _mm_xor_si128(_mm_load_si128(input + 2), xout6);
-        xout7 = _mm_xor_si128(_mm_load_si128(input + 3), xout7);
-        input += (64 << interleave) / sizeof(__m128i);
 
+        constexpr int input_increment = (64 << interleave) / sizeof(__m128i);
+
+        xout4 = _mm_xor_si128(_mm_load_si128(input + input_increment + 0), xout4);
+        xout5 = _mm_xor_si128(_mm_load_si128(input + input_increment + 1), xout5);
+        xout6 = _mm_xor_si128(_mm_load_si128(input + input_increment + 2), xout6);
+        xout7 = _mm_xor_si128(_mm_load_si128(input + input_increment + 3), xout7);
+
+        input += input_increment * 2;
         i += 8;
 
         if ((interleave > 0) && (i < props.memory() / sizeof(__m128i))) {
@@ -545,8 +550,10 @@ static inline __m128i int_sqrt_v2(const uint64_t n0)
     r >>= 19;
 
     uint64_t x2 = (s - (1022ULL << 32)) * (r - s - (1022ULL << 32) + 1);
-#   if (defined(_MSC_VER) || __GNUC__ > 7 || (__GNUC__ == 7 && __GNUC_MINOR__ > 1)) && (defined(__x86_64__) || defined(_M_AMD64))
+#   if (defined(_MSC_VER) || __GNUC__ > 7 || (__GNUC__ == 7 && __GNUC_MINOR__ > 1)) && (defined(__x86_64__) || defined(_M_AMD64)) && !defined(__INTEL_COMPILER)
     _addcarry_u64(_subborrow_u64(0, x2, n0, (unsigned long long int*)&x2), r, 0, (unsigned long long int*)&r);
+#   elif defined(__INTEL_COMPILER)
+    _addcarry_u64(_subborrow_u64(0, x2, n0, (unsigned long int*)&x2), r, 0, (unsigned long int*)&r);
 #   else
     if (x2 < n0) ++r;
 #   endif
@@ -823,7 +830,7 @@ void cn_explode_scratchpad_gpu(const uint8_t *input, uint8_t *output)
 }
 
 
-template<Algorithm::Id ALGO, bool SOFT_AES>
+template<Algorithm::Id ALGO, bool SOFT_AES, int interleave>
 inline void cryptonight_single_hash_gpu(const uint8_t *__restrict__ input, size_t size, uint8_t *__restrict__ output, cryptonight_ctx **__restrict__ ctx, uint64_t)
 {
     constexpr CnAlgo<ALGO> props;
@@ -843,7 +850,7 @@ inline void cryptonight_single_hash_gpu(const uint8_t *__restrict__ input, size_
         cn_gpu_inner_ssse3<props.iterations(), props.mask()>(ctx[0]->state, ctx[0]->memory);
     }
 
-    cn_implode_scratchpad<ALGO, SOFT_AES, 0>(reinterpret_cast<const __m128i *>(ctx[0]->memory), reinterpret_cast<__m128i *>(ctx[0]->state));
+    cn_implode_scratchpad<ALGO, SOFT_AES, interleave>(reinterpret_cast<const __m128i *>(ctx[0]->memory), reinterpret_cast<__m128i *>(ctx[0]->state));
     keccakf(reinterpret_cast<uint64_t*>(ctx[0]->state), 24);
     memcpy(output, ctx[0]->state, 32);
 }
