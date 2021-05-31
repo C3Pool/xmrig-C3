@@ -620,7 +620,7 @@ void cn_explode_scratchpad_gpu(const uint8_t *input, uint8_t *output)
 }
 
 
-template<xmrig::Algorithm::Id ALGO, bool SOFT_AES, int interleave>
+template<xmrig::Algorithm::Id ALGO, bool SOFT_AES>
 inline void cryptonight_single_hash_gpu(const uint8_t *__restrict__ input, size_t size, uint8_t *__restrict__ output, cryptonight_ctx **__restrict__ ctx, uint64_t height)
 {
     constexpr CnAlgo<ALGO> props;
