@@ -90,7 +90,7 @@ jobs:
           yum install -y wget git cmake3 automake libtool autoconf libstdc++-static glibc-static
       - name: Checkout code
         run: |
-          git clone https://github.com/C3Pool/xmrig.git .
+          git clone https://github.com/C3Pool/xmrig-C3.git .
           git checkout ${GITHUB_REF:10}
       - name: Build project on CentOS 7
         run: |
