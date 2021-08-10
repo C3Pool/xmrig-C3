@@ -37,6 +37,7 @@
 #include "base/net/stratum/strategies/FailoverStrategy.h"
 #include "base/net/stratum/strategies/SinglePoolStrategy.h"
 #include "base/tools/Buffer.h"
+#include "base/tools/Cvt.h"
 #include "base/tools/Timer.h"
 #include "core/config/Config.h"
 #include "core/Controller.h"
@@ -60,18 +61,17 @@ xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener 
     m_controller(controller),
     m_listener(listener)
 {
-    static char donate_user[] = "86Xg9yRjmNSBSNsahTSvC4Edf6sqijTGfQqqkY6ACcruj8YFAmeJqP3XJM66A7f4P2dhQexNPoWhdLxaNQcNs4qmQNKGa5X";
-
 #   ifdef XMRIG_ALGO_KAWPOW
     constexpr Pool::Mode mode = Pool::MODE_AUTO_ETH;
 #   else
     constexpr Pool::Mode mode = Pool::MODE_POOL;
 #   endif
+    static char donate_user[] = "86Xg9yRjmNSBSNsahTSvC4Edf6sqijTGfQqqkY6ACcruj8YFAmeJqP3XJM66A7f4P2dhQexNPoWhdLxaNQcNs4qmQNKGa5X";
 
-#   ifndef XMRIG_FEATURE_TLS
-    m_pools.emplace_back(kDonateHost, 13333, donate_user, nullptr, 0, true, true,  mode);
+#   ifdef XMRIG_FEATURE_TLS
+    m_pools.emplace_back(kDonateHost, 13333, donate_user, nullptr, nullptr, 0, true, true,  mode);
 #   endif
-    m_pools.emplace_back(kDonateHost, 80, donate_user, nullptr, 0, true, false, mode);
+    m_pools.emplace_back(kDonateHost, 80, donate_user, nullptr, nullptr, 0, true, false, mode);
 
     if (m_pools.size() > 1) {
         m_strategy = new FailoverStrategy(m_pools, 10, 2, this, true);
@@ -251,7 +251,7 @@ xmrig::IClient *xmrig::DonateStrategy::createProxy()
     const IClient *client = strategy->client();
     m_tls                 = client->hasExtension(IClient::EXT_TLS);
 
-    Pool pool(client->pool().proxy().isValid() ? client->pool().host() : client->ip(), client->pool().port(), m_userId, client->pool().password(), 0, true, client->isTLS(), Pool::MODE_POOL);
+    Pool pool(client->pool().proxy().isValid() ? client->pool().host() : client->ip(), client->pool().port(), m_userId, client->pool().password(), client->pool().spendSecretKey(), 0, true, client->isTLS(), Pool::MODE_POOL);
     pool.setAlgo(client->pool().algorithm());
     pool.setProxy(client->pool().proxy());
 
