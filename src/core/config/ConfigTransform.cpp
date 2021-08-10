@@ -44,6 +44,9 @@ static const char *kAsterisk    = "*";
 static const char *kEnabled     = "enabled";
 static const char *kIntensity   = "intensity";
 static const char *kThreads     = "threads";
+#ifdef XMRIG_ALGO_KAWPOW
+static const char *kKawPow      = "kawpow";
+#endif
 
 
 static inline uint64_t intensity(uint64_t av)
@@ -103,6 +106,9 @@ void xmrig::ConfigTransform::finalize(rapidjson::Document &doc)
         profile.AddMember(StringRef(kThreads),   m_threads, allocator);
         profile.AddMember(StringRef(kAffinity),  m_affinity, allocator);
 
+#       ifdef XMRIG_ALGO_KAWPOW
+        doc[CpuConfig::kField].AddMember(StringRef(kKawPow), false, doc.GetAllocator());
+#       endif
         doc[CpuConfig::kField].AddMember(StringRef(kAsterisk), profile, doc.GetAllocator());
     }
 
@@ -195,6 +201,9 @@ void xmrig::ConfigTransform::transform(rapidjson::Document &doc, int key, const 
 
     case IConfig::RandomXCacheQoSKey: /* --cache-qos */
         return set(doc, RxConfig::kField, RxConfig::kCacheQoS, true);
+
+    case IConfig::HugePagesJitKey: /* --huge-pages-jit */
+        return set(doc, CpuConfig::kField, CpuConfig::kHugePagesJit, true);
 #   endif
 
 #   ifdef XMRIG_FEATURE_OPENCL
