@@ -8,7 +8,7 @@
 #include "randomx_constants_arqma.h"
 #elif (ALGO == ALGO_RX_KEVA)
 #include "randomx_constants_keva.h"
-#elif (ALGO == ALGO_RX_GAFT)
+#elif (ALGO == ALGO_RX_GRAFT)
 #include "randomx_constants_graft.h"
 #endif
 

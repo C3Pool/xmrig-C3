@@ -68,9 +68,9 @@ public:
         RX_0            = 0x72151200,   // "rx/0"             RandomX (reference configuration).
         RX_WOW          = 0x72141177,   // "rx/wow"           RandomWOW (Wownero).
         RX_ARQ          = 0x72121061,   // "rx/arq"           RandomARQ (Arqma).
+        RX_GRAFT        = 0x72151267,   // "rx/graft"         RandomGRAFT (Graft).
         RX_SFX          = 0x72151273,   // "rx/sfx"           RandomSFX (Safex Cash).
         RX_KEVA         = 0x7214116b,   // "rx/keva"          RandomKEVA (Keva).
-        RX_GRAFT        = 0x721512ff,   // "rx/graft"         RandomX-Graft (Graft).
         AR2_CHUKWA      = 0x61130000,   // "argon2/chukwa"    Argon2id (Chukwa).
         AR2_CHUKWA_V2   = 0x61140000,   // "argon2/chukwav2"  Argon2id (Chukwa v2).
         AR2_WRKZ        = 0x61120000,   // "argon2/wrkz"      Argon2id (WRKZ)
@@ -138,9 +138,9 @@ public:
     static const char *kRX_0;
     static const char *kRX_WOW;
     static const char *kRX_ARQ;
+    static const char *kRX_GRAFT;
     static const char *kRX_SFX;
     static const char *kRX_KEVA;
-    static const char *kRX_GRAFT;
 #   endif
 
 #   ifdef XMRIG_ALGO_ARGON2
@@ -164,7 +164,9 @@ public:
 #   ifdef XMRIG_ALGO_CN_GPU
     static const char *kCN_GPU;
 #   endif
+#   ifdef XMRIG_ALGO_RANDOMX
     static const char *kRX_XLA;
+#   endif
 
 
     inline Algorithm() = default;
@@ -176,7 +178,7 @@ public:
     static inline constexpr bool isCN(Id id)                { return (id & 0xff000000) == CN_ANY; }
     static inline constexpr Id base(Id id)                  { return isCN(id) ? static_cast<Id>(CN_0 | (id & 0xff00)) : INVALID; }
     static inline constexpr size_t l2(Id id)                { return family(id) == RANDOM_X ? (1U << ((id >> 8) & 0xff)) : 0U; }
-    static inline constexpr size_t l3(Id id)                { return 1U << ((id >> 16) & 0xff); }
+    static inline constexpr size_t l3(Id id)                { return 1ULL << ((id >> 16) & 0xff); }
     static inline constexpr uint32_t family(Id id)          { return id & (isCN(id) ? 0xffff0000 : 0xff000000); }
 
     inline bool isCN() const                                { return isCN(m_id); }
