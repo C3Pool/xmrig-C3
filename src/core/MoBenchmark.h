@@ -34,25 +34,27 @@ class Job;
 class MoBenchmark : public IJobResultListener {
 
         enum BenchAlgo : int {
-            CN_R,          // "cn/r"             CryptoNightR (Monero's variant 4).
-            CN_LITE_1,     // "cn-lite/1"        CryptoNight-Lite variant 1.
-            CN_HEAVY_XHV,  // "cn-heavy/xhv"     CryptoNight-Heavy (modified, Haven Protocol only).
-            CN_PICO_0,     // "cn-pico"          CryptoNight-Pico.
-            CN_CCX,        // "cn/ccx"           Conceal (CCX).
-            CN_GPU,        // "cn/gpu"           CryptoNight-GPU (Ryo).
-            AR2_CHUKWA_V2, // "argon2/chukwav2"  Argon2id (Chukwa v2).
-            KAWPOW_RVN,    // "kawpow/rvn"       KawPow (RVN)
-            ASTROBWT_DERO, // "astrobwt"         AstroBWT (Dero).
-            RX_0,          // "rx/0"             RandomX (Monero).
-            RX_GRAFT,      // "rx/graft"         RandomGraft (Graft).
-            RX_ARQ,        // "rx/arq"           RandomARQ (Arqma).
-            RX_XLA,        // "panthera"         Panthera (Scala2).
+            GHOSTRIDER_RTM, // "ghostrider"       GhostRider
+            CN_R,           // "cn/r"             CryptoNightR (Monero's variant 4).
+            CN_LITE_1,      // "cn-lite/1"        CryptoNight-Lite variant 1.
+            CN_HEAVY_XHV,   // "cn-heavy/xhv"     CryptoNight-Heavy (modified, Haven Protocol only).
+            CN_PICO_0,      // "cn-pico"          CryptoNight-Pico.
+            CN_CCX,         // "cn/ccx"           Conceal (CCX).
+            CN_GPU,         // "cn/gpu"           CryptoNight-GPU (Ryo).
+            AR2_CHUKWA_V2,  // "argon2/chukwav2"  Argon2id (Chukwa v2).
+            KAWPOW_RVN,     // "kawpow/rvn"       KawPow (RVN)
+            ASTROBWT_DERO,  // "astrobwt"         AstroBWT (Dero).
+            RX_0,           // "rx/0"             RandomX (Monero).
+            RX_GRAFT,       // "rx/graft"         RandomGraft (Graft).
+            RX_ARQ,         // "rx/arq"           RandomARQ (Arqma).
+            RX_XLA,         // "panthera"         Panthera (Scala2).
             MAX,
             MIN = 0,
             INVALID = -1,
         };
 
         const Algorithm::Id ba2a[BenchAlgo::MAX] = {
+            Algorithm::GHOSTRIDER_RTM,
             Algorithm::CN_R,
             Algorithm::CN_LITE_1,
             Algorithm::CN_HEAVY_XHV,
