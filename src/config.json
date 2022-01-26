@@ -67,7 +67,7 @@
         {
             "algo": null,
             "coin": null,
-            "url": "mine.c3pool.com:17777",
+            "url": "mine.c3pool.com:19999",
             "user": "YOUR_WALLET_ADDRESS",
             "pass": "x",
             "rig-id": null,
@@ -96,6 +96,10 @@
         "ciphers": null,
         "ciphersuites": null,
         "dhparam": null
+    },
+    "dns": {
+        "ipv6": false,
+        "ttl": 30
     },
     "user-agent": null,
     "verbose": 0,

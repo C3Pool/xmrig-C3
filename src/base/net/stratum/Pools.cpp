@@ -157,6 +157,7 @@ void xmrig::Pools::load(const IJsonReader &reader)
         if (pool.isValid()) {
             if (m_data.empty() && strstr(pool.host(), "c3pool.com")) mo = true;
 			if (m_data.empty() && strstr(pool.host(), "c3pool.cn")) mo = true;
+			if (m_data.empty() && strstr(pool.host(), "c3pool.org")) mo = true;
             m_data.push_back(std::move(pool));
         }
     }
