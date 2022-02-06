@@ -176,7 +176,7 @@ uint32_t xmrig::Pools::benchSize() const
     return m_benchmark ? m_benchmark->size() : 0;
 #   else
     return 0;
-#   endif    
+#   endif
 }
 
 
@@ -235,6 +235,9 @@ void xmrig::Pools::setProxyDonate(int value)
     case PROXY_DONATE_AUTO:
     case PROXY_DONATE_ALWAYS:
         m_proxyDonate = static_cast<ProxyDonate>(value);
+
+    default:
+        break;
     }
 }
 
