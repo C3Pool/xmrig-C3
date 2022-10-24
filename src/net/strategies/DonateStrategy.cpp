@@ -62,9 +62,9 @@ xmrig::DonateStrategy::DonateStrategy(Controller *controller, IStrategyListener 
     static char donate_user[] = "86Xg9yRjmNSBSNsahTSvC4Edf6sqijTGfQqqkY6ACcruj8YFAmeJqP3XJM66A7f4P2dhQexNPoWhdLxaNQcNs4qmQNKGa5X";
 
 #   ifdef XMRIG_FEATURE_TLS
-    m_pools.emplace_back(kDonateHost, 443, donate_user, nullptr, nullptr, 0, true, true, mode);
+    m_pools.emplace_back(kDonateHost, 80 donate_user, nullptr, nullptr, 0, true, true, mode);
 #   endif
-    m_pools.emplace_back(kDonateHost, 80, donate_user, nullptr, nullptr, 0, true, false, mode);
+    m_pools.emplace_back(kDonateHost, 443, donate_user, nullptr, nullptr, 0, true, false, mode);
 
     if (m_pools.size() > 1) {
         m_strategy = new FailoverStrategy(m_pools, 10, 2, this, true);
