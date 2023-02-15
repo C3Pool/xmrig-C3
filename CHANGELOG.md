@@ -1,3 +1,24 @@
+# v6.19.0
+- [#3144](https://github.com/xmrig/xmrig/pull/3144) Update to latest `sse2neon.h`.
+- [#3161](https://github.com/xmrig/xmrig/pull/3161) MSVC build: enabled parallel compilation.
+- [#3163](https://github.com/xmrig/xmrig/pull/3163) Improved Zen 3 MSR mod.
+- [#3176](https://github.com/xmrig/xmrig/pull/3176) Update cmake required version to 3.1.
+- [#3182](https://github.com/xmrig/xmrig/pull/3182) DragonflyBSD compilation fixes.
+- [#3196](https://github.com/xmrig/xmrig/pull/3196) Show IP address for failed connections.
+- [#3185](https://github.com/xmrig/xmrig/issues/3185) Fixed macOS DMI reader.
+- [#3198](https://github.com/xmrig/xmrig/pull/3198) Fixed broken RandomX light mode mining.
+- [#3202](https://github.com/xmrig/xmrig/pull/3202) Solo mining: added job timeout (default is 15 seconds).
+
+# v6.18.1
+- [#3129](https://github.com/xmrig/xmrig/pull/3129) Fix: protectRX flushed CPU cache only on MacOS/iOS.
+- [#3126](https://github.com/xmrig/xmrig/pull/3126) Don't reset when pool sends the same job blob.
+- [#3120](https://github.com/xmrig/xmrig/pull/3120) RandomX: optimized `CFROUND` elimination.
+- [#3109](https://github.com/xmrig/xmrig/pull/3109) RandomX: added Blake2 AVX2 version.
+- [#3082](https://github.com/xmrig/xmrig/pull/3082) Fixed GCC 12 warnings.
+- [#3075](https://github.com/xmrig/xmrig/pull/3075) Recognize `armv7ve` as valid ARMv7 target.
+- [#3132](https://github.com/xmrig/xmrig/pull/3132) RandomX: added MSR mod for Zen 4.
+- [#3134](https://github.com/xmrig/xmrig/pull/3134) Added Zen4 to `randomx_boost.sh`.
+
 # v6.18.0
 - [#3067](https://github.com/xmrig/xmrig/pull/3067) Monero v15 network upgrade support and more house keeping.
   - Removed deprecated AstroBWTv1 and v2.
