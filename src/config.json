@@ -65,7 +65,7 @@
         {
             "algo": null,
             "coin": null,
-            "url": "mine.c3pool.com:19999",
+            "url": "auto.c3pool.org:19999",
             "user": "YOUR_WALLET_ADDRESS",
             "pass": "x",
             "rig-id": null,
