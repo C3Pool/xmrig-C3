@@ -183,7 +183,7 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/xmrig_setup.git
           cd xmrig_setup
           git config user.name  C3Pool
-          git config user.email C3Pool@outlook.com
+          git config user.email C3Pool@c3pool.com
           cp ../centos7_build/centos7_build.tar.gz xmrig.tar.gz
           cp ../windows_build/windows_build.zip xmrig.zip
           unzip xmrig.zip
@@ -196,7 +196,7 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/hiveos.git
           cd hiveos
           git config user.name  C3Pool
-          git config user.email C3Pool@outlook.com
+          git config user.email C3Pool@c3pool.com
           tar xf ../centos7_build/centos7_build.tar.gz
           mv xmrig cat_xmrig/xmrig
           mv config.json cat_xmrig/config_global.json
