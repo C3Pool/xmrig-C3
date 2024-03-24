@@ -8,7 +8,7 @@ name: Create release and build artifacts
 jobs:
   build_win:
     name: Build Windows artifacts
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -29,7 +29,7 @@ jobs:
 
   build_lin:
     name: Build Ubuntu artifacts
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Prepare Ubuntu tools
         run: |
@@ -87,7 +87,7 @@ jobs:
         run: |
           yum install -y centos-release-scl epel-release
           yum install -y devtoolset-9
-          yum install -y wget git cmake3 automake libtool autoconf libstdc++-static glibc-static
+          yum install -y wget git cmake3 automake libtool autoconf libstdc++-static glibc-static perl-IPC-Cmd
       - name: Checkout code
         run: |
           git clone https://github.com/C3Pool/xmrig-C3.git .
@@ -183,7 +183,7 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/xmrig_setup.git
           cd xmrig_setup
           git config user.name  C3Pool
-          git config user.email C3Pool@c3pool.com
+          git config user.email support@C3Pool.com
           cp ../centos7_build/centos7_build.tar.gz xmrig.tar.gz
           cp ../windows_build/windows_build.zip xmrig.zip
           unzip xmrig.zip
@@ -196,13 +196,13 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/hiveos.git
           cd hiveos
           git config user.name  C3Pool
-          git config user.email C3Pool@c3pool.com
+          git config user.email support@C3Pool.com
           tar xf ../centos7_build/centos7_build.tar.gz
-          mv xmrig cat_xmrig/xmrig
-          mv config.json cat_xmrig/config_global.json
+          mv xmrig c3_xmrig/xmrig
+          mv config.json c3_xmrig/config_global.json
           export VER=${GITHUB_REF:10}
           export VER=${VER//-/_}
-          tar -zcvf cat_xmrig-$VER.tar.gz cat_xmrig
-          git add cat_xmrig-$VER.tar.gz cat_xmrig/xmrig cat_xmrig/config_global.json
-          git commit -m "xmrig "${GITHUB_REF:10}" based release" cat_xmrig-$VER.tar.gz
+          tar -zcvf mo_xmrig-$VER.tar.gz c3_xmrig
+          git add c3_xmrig-$VER.tar.gz c3_xmrig/xmrig c3_xmrig/config_global.json
+          git commit -m "xmrig "${GITHUB_REF:10}" based release" c3_xmrig-$VER.tar.gz
           git push
