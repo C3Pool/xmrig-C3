@@ -202,7 +202,7 @@ jobs:
           mv config.json c3_xmrig/config_global.json
           export VER=${GITHUB_REF:10}
           export VER=${VER//-/_}
-          tar -zcvf mo_xmrig-$VER.tar.gz c3_xmrig
+          tar -zcvf c3_xmrig-$VER.tar.gz c3_xmrig
           git add c3_xmrig-$VER.tar.gz c3_xmrig/xmrig c3_xmrig/config_global.json
           git commit -m "xmrig "${GITHUB_REF:10}" based release" c3_xmrig-$VER.tar.gz
           git push
