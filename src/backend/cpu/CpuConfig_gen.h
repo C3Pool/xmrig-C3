@@ -126,6 +126,17 @@ size_t inline generate<Algorithm::RANDOM_X>(Threads<CpuThreads> &threads, uint32
         }
     }
 
+    if (!threads.isExist(Algorithm::RX_XEQ)) {
+        auto xeq = cpuInfo->threads(Algorithm::RX_XEQ, limit);
+        if (xeq == wow) {
+            threads.setAlias(Algorithm::RX_XEQ, Algorithm::kRX_WOW);
+            ++count;
+        }
+        else {
+            count += threads.move(Algorithm::kRX_XEQ, std::move(xeq));
+        }
+    }
+
     if (!threads.isExist(Algorithm::RX_KEVA)) {
         auto keva = cpuInfo->threads(Algorithm::RX_KEVA, limit);
         if (keva == wow) {
@@ -165,7 +176,10 @@ size_t inline generate<Algorithm::ARGON2>(Threads<CpuThreads> &threads, uint32_t
 template<>
 size_t inline generate<Algorithm::GHOSTRIDER>(Threads<CpuThreads>& threads, uint32_t limit)
 {
-    return generate(Algorithm::kGHOSTRIDER, threads, Algorithm::GHOSTRIDER_RTM, limit);
+    size_t count = 0;
+    count += generate(Algorithm::kGHOSTRIDER, threads, Algorithm::GHOSTRIDER_RTM, limit);
+    count += generate(Algorithm::kFLEX, threads, Algorithm::FLEX_KCN, limit);
+    return count;
 }
 #endif
 

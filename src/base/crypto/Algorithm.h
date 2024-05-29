@@ -73,9 +73,11 @@ public:
         CN_GR_4         = 0x63120104,   // "cn/turtle"        GhostRider
         CN_GR_5         = 0x63120105,   // "cn/turtle-lite"   GhostRider
         GHOSTRIDER_RTM  = 0x6c150000,   // "ghostrider"       GhostRider
+        FLEX_KCN        = 0x6c150001,   // "flex"             Flex
         RX_0            = 0x72151200,   // "rx/0"             RandomX (reference configuration).
         RX_WOW          = 0x72141177,   // "rx/wow"           RandomWOW (Wownero).
         RX_ARQ          = 0x72121061,   // "rx/arq"           RandomARQ (Arqma).
+        RX_XEQ          = 0x72121000,
         RX_GRAFT        = 0x72151267,   // "rx/graft"         RandomGRAFT (Graft).
         RX_SFX          = 0x72151273,   // "rx/sfx"           RandomSFX (Safex Cash).
         RX_KEVA         = 0x7214116b,   // "rx/keva"          RandomKEVA (Keva).
@@ -148,6 +150,7 @@ public:
     static const char *kRX_0;
     static const char *kRX_WOW;
     static const char *kRX_ARQ;
+    static const char *kRX_XEQ;
     static const char *kRX_GRAFT;
     static const char *kRX_SFX;
     static const char *kRX_KEVA;
@@ -172,6 +175,8 @@ public:
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     static const char* kGHOSTRIDER;
     static const char* kGHOSTRIDER_RTM;
+    static const char* kFLEX;
+    static const char* kFLEX_KCN;
 #   endif
 
     inline Algorithm() = default;
@@ -193,8 +198,8 @@ public:
     inline Id id() const                                    { return m_id; }
     inline size_t l2() const                                { return l2(m_id); }
     inline uint32_t family() const                          { return family(m_id); }
-    inline uint32_t minIntensity() const                    { return ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
-    inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((m_id == GHOSTRIDER_RTM) ? 8 : 1); };
+    inline uint32_t minIntensity() const                    { return ((family(m_id) == GHOSTRIDER) ? 8 : 1); };
+    inline uint32_t maxIntensity() const                    { return isCN() ? 5 : ((family(m_id) == GHOSTRIDER) ? 8 : 1); };
 
     inline size_t l3() const                                { return l3(m_id); }
 

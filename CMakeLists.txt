@@ -131,6 +131,7 @@ set(SOURCES_CRYPTO
     src/crypto/common/MemoryPool.cpp
     src/crypto/common/Nonce.cpp
     src/crypto/common/VirtualMemory.cpp
+    src/crypto/flex/flex.cpp
    )
 
 if (WITH_MO_BENCHMARK)
