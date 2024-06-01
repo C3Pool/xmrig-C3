@@ -40,7 +40,7 @@
 extern "C" {
 #endif
 
-#include "sph_types.h"
+#include "../ghostrider/sph_types.h"
 #include <stddef.h>
 
 /**
@@ -110,9 +110,9 @@ typedef sph_keccak_context sph_keccak512_context;
  * Initialize a Keccak-224 context. This process performs no memory allocation.
  *
  * @param cc   the Keccak-224 context (pointer to a
- *             <code>sph_keccak224_context</code>)
+ *             <code>flex_keccak224_context</code>)
  */
-void sph_keccak224_init(void *cc);
+void flex_keccak224_init(void *cc);
 
 /**
  * Process some data bytes. It is acceptable that <code>len</code> is zero
@@ -122,7 +122,7 @@ void sph_keccak224_init(void *cc);
  * @param data   the input data
  * @param len    the input data length (in bytes)
  */
-void sph_keccak224(void *cc, const void *data, size_t len);
+void flex_keccak224(void *cc, const void *data, size_t len);
 
 /**
  * Terminate the current Keccak-224 computation and output the result into
@@ -133,7 +133,7 @@ void sph_keccak224(void *cc, const void *data, size_t len);
  * @param cc    the Keccak-224 context
  * @param dst   the destination buffer
  */
-void sph_keccak224_close(void *cc, void *dst);
+void flex_keccak224_close(void *cc, void *dst);
 
 /**
  * Add a few additional bits (0 to 7) to the current computation, then
@@ -148,16 +148,16 @@ void sph_keccak224_close(void *cc, void *dst);
  * @param n     the number of extra bits (0 to 7)
  * @param dst   the destination buffer
  */
-void sph_keccak224_addbits_and_close(void *cc, unsigned ub, unsigned n,
-                                     void *dst);
+void flex_keccak224_addbits_and_close(void *cc, unsigned ub, unsigned n,
+                                      void *dst);
 
 /**
  * Initialize a Keccak-256 context. This process performs no memory allocation.
  *
  * @param cc   the Keccak-256 context (pointer to a
- *             <code>sph_keccak256_context</code>)
+ *             <code>flex_keccak256_context</code>)
  */
-void sph_keccak256_init(void *cc);
+void flex_keccak256_init(void *cc);
 
 /**
  * Process some data bytes. It is acceptable that <code>len</code> is zero
@@ -167,7 +167,7 @@ void sph_keccak256_init(void *cc);
  * @param data   the input data
  * @param len    the input data length (in bytes)
  */
-void sph_keccak256(void *cc, const void *data, size_t len);
+void flex_keccak256(void *cc, const void *data, size_t len);
 
 /**
  * Terminate the current Keccak-256 computation and output the result into
@@ -178,7 +178,7 @@ void sph_keccak256(void *cc, const void *data, size_t len);
  * @param cc    the Keccak-256 context
  * @param dst   the destination buffer
  */
-void sph_keccak256_close(void *cc, void *dst);
+void flex_keccak256_close(void *cc, void *dst);
 
 /**
  * Add a few additional bits (0 to 7) to the current computation, then
@@ -193,16 +193,16 @@ void sph_keccak256_close(void *cc, void *dst);
  * @param n     the number of extra bits (0 to 7)
  * @param dst   the destination buffer
  */
-void sph_keccak256_addbits_and_close(void *cc, unsigned ub, unsigned n,
-                                     void *dst);
+void flex_keccak256_addbits_and_close(void *cc, unsigned ub, unsigned n,
+                                      void *dst);
 
 /**
  * Initialize a Keccak-384 context. This process performs no memory allocation.
  *
  * @param cc   the Keccak-384 context (pointer to a
- *             <code>sph_keccak384_context</code>)
+ *             <code>flex_keccak384_context</code>)
  */
-void sph_keccak384_init(void *cc);
+void flex_keccak384_init(void *cc);
 
 /**
  * Process some data bytes. It is acceptable that <code>len</code> is zero
@@ -212,7 +212,7 @@ void sph_keccak384_init(void *cc);
  * @param data   the input data
  * @param len    the input data length (in bytes)
  */
-void sph_keccak384(void *cc, const void *data, size_t len);
+void flex_keccak384(void *cc, const void *data, size_t len);
 
 /**
  * Terminate the current Keccak-384 computation and output the result into
@@ -223,7 +223,7 @@ void sph_keccak384(void *cc, const void *data, size_t len);
  * @param cc    the Keccak-384 context
  * @param dst   the destination buffer
  */
-void sph_keccak384_close(void *cc, void *dst);
+void flex_keccak384_close(void *cc, void *dst);
 
 /**
  * Add a few additional bits (0 to 7) to the current computation, then
@@ -238,16 +238,16 @@ void sph_keccak384_close(void *cc, void *dst);
  * @param n     the number of extra bits (0 to 7)
  * @param dst   the destination buffer
  */
-void sph_keccak384_addbits_and_close(void *cc, unsigned ub, unsigned n,
+void flex_keccak384_addbits_and_close(void *cc, unsigned ub, unsigned n,
                                      void *dst);
 
 /**
  * Initialize a Keccak-512 context. This process performs no memory allocation.
  *
  * @param cc   the Keccak-512 context (pointer to a
- *             <code>sph_keccak512_context</code>)
+ *             <code>flex_keccak512_context</code>)
  */
-void sph_keccak512_init(void *cc);
+void flex_keccak512_init(void *cc);
 
 /**
  * Process some data bytes. It is acceptable that <code>len</code> is zero
@@ -257,7 +257,7 @@ void sph_keccak512_init(void *cc);
  * @param data   the input data
  * @param len    the input data length (in bytes)
  */
-void sph_keccak512(void *cc, const void *data, size_t len);
+void flex_keccak512(void *cc, const void *data, size_t len);
 
 /**
  * Terminate the current Keccak-512 computation and output the result into
@@ -268,7 +268,7 @@ void sph_keccak512(void *cc, const void *data, size_t len);
  * @param cc    the Keccak-512 context
  * @param dst   the destination buffer
  */
-void sph_keccak512_close(void *cc, void *dst);
+void flex_keccak512_close(void *cc, void *dst);
 
 /**
  * Add a few additional bits (0 to 7) to the current computation, then
@@ -283,8 +283,8 @@ void sph_keccak512_close(void *cc, void *dst);
  * @param n     the number of extra bits (0 to 7)
  * @param dst   the destination buffer
  */
-void sph_keccak512_addbits_and_close(void *cc, unsigned ub, unsigned n,
-                                     void *dst);
+void flex_keccak512_addbits_and_close(void *cc, unsigned ub, unsigned n,
+                                      void *dst);
 
 #ifdef __cplusplus
 }

@@ -30,7 +30,7 @@
  * @author   Thomas Pornin <thomas.pornin@cryptolog.com>
  */
 
-#include "sph_keccak.h"
+#include "flex_keccak.h"
 #include <stddef.h>
 #include <string.h>
 
@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 // Taken from keccak-gate.c
-static const int hard_coded_eb = 1;
+static const int flex_hard_coded_eb = 6;
 
 /*
  * Parameters:
@@ -951,7 +951,7 @@ static const struct {
 
 #define ROL64_32(d, v)                                                         \
   do {                                                                         \
-    sph_u32 tmp;                                                               \
+    flex_u32 tmp;                                                               \
     tmp = v##l;                                                                \
     d##l = v##h;                                                               \
     d##h = tmp;                                                                \
@@ -1698,7 +1698,7 @@ static void keccak_core(sph_keccak_context *kc, const void *data, size_t len,
     } u;                                                                       \
     size_t j;                                                                  \
                                                                                \
-    eb = hard_coded_eb;                                                        \
+    eb = flex_hard_coded_eb;                                                   \
     if (kc->ptr == (lim - 1)) {                                                \
       if (n == 7) {                                                            \
         u.tmp[0] = eb;                                                         \
@@ -1775,7 +1775,7 @@ static void keccak_core(sph_keccak_context *kc, const void *data, size_t len,
     for (j = 0; j < 50; j += 2)                                                \
       UNINTERLEAVE(kc->u.narrow[j], kc->u.narrow[j + 1]);                      \
     for (j = 0; j < d; j += 4)                                                 \
-      sph_enc32le_aligned(u.tmp + j, kc->u.narrow[j >> 2]);                    \
+      flex_enc32le_aligned(u.tmp + j, kc->u.narrow[j >> 2]);                    \
     memcpy(dst, u.tmp, d);                                                     \
     keccak_init(kc, (unsigned)d << 3);                                         \
   }
@@ -1787,79 +1787,79 @@ DEFCLOSE(32, 136)
 DEFCLOSE(48, 104)
 DEFCLOSE(64, 72)
 
-/* see sph_keccak.h */
-void sph_keccak224_init(void *cc) { keccak_init(cc, 224); }
+/* see flex_keccak.h */
+void flex_keccak224_init(void *cc) { keccak_init(cc, 224); }
 
-/* see sph_keccak.h */
-void sph_keccak224(void *cc, const void *data, size_t len) {
+/* see flex_keccak.h */
+void flex_keccak224(void *cc, const void *data, size_t len) {
   keccak_core(cc, data, len, 144);
 }
 
-/* see sph_keccak.h */
-void sph_keccak224_close(void *cc, void *dst) {
-  sph_keccak224_addbits_and_close(cc, 0, 0, dst);
+/* see flex_keccak.h */
+void flex_keccak224_close(void *cc, void *dst) {
+  flex_keccak224_addbits_and_close(cc, 0, 0, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak224_addbits_and_close(void *cc, unsigned ub, unsigned n,
-                                     void *dst) {
+/* see flex_keccak.h */
+void flex_keccak224_addbits_and_close(void *cc, unsigned ub, unsigned n,
+                                      void *dst) {
   keccak_close28(cc, ub, n, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak256_init(void *cc) { keccak_init(cc, 256); }
+/* see flex_keccak.h */
+void flex_keccak256_init(void *cc) { keccak_init(cc, 256); }
 
-/* see sph_keccak.h */
-void sph_keccak256(void *cc, const void *data, size_t len) {
+/* see flex_keccak.h */
+void flex_keccak256(void *cc, const void *data, size_t len) {
   keccak_core(cc, data, len, 136);
 }
 
-/* see sph_keccak.h */
-void sph_keccak256_close(void *cc, void *dst) {
-  sph_keccak256_addbits_and_close(cc, 0, 0, dst);
+/* see flex_keccak.h */
+void flex_keccak256_close(void *cc, void *dst) {
+  flex_keccak256_addbits_and_close(cc, 0, 0, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak256_addbits_and_close(void *cc, unsigned ub, unsigned n,
+/* see flex_keccak.h */
+void flex_keccak256_addbits_and_close(void *cc, unsigned ub, unsigned n,
                                      void *dst) {
   keccak_close32(cc, ub, n, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak384_init(void *cc) { keccak_init(cc, 384); }
+/* see flex_keccak.h */
+void flex_keccak384_init(void *cc) { keccak_init(cc, 384); }
 
-/* see sph_keccak.h */
-void sph_keccak384(void *cc, const void *data, size_t len) {
+/* see flex_keccak.h */
+void flex_keccak384(void *cc, const void *data, size_t len) {
   keccak_core(cc, data, len, 104);
 }
 
-/* see sph_keccak.h */
-void sph_keccak384_close(void *cc, void *dst) {
-  sph_keccak384_addbits_and_close(cc, 0, 0, dst);
+/* see flex_keccak.h */
+void flex_keccak384_close(void *cc, void *dst) {
+  flex_keccak384_addbits_and_close(cc, 0, 0, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak384_addbits_and_close(void *cc, unsigned ub, unsigned n,
-                                     void *dst) {
+/* see flex_keccak.h */
+void flex_keccak384_addbits_and_close(void *cc, unsigned ub, unsigned n,
+                                      void *dst) {
   keccak_close48(cc, ub, n, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak512_init(void *cc) { keccak_init(cc, 512); }
+/* see flex_keccak.h */
+void flex_keccak512_init(void *cc) { keccak_init(cc, 512); }
 
-/* see sph_keccak.h */
-void sph_keccak512(void *cc, const void *data, size_t len) {
+/* see flex_keccak.h */
+void flex_keccak512(void *cc, const void *data, size_t len) {
   keccak_core(cc, data, len, 72);
 }
 
-/* see sph_keccak.h */
-void sph_keccak512_close(void *cc, void *dst) {
-  sph_keccak512_addbits_and_close(cc, 0, 0, dst);
+/* see flex_keccak.h */
+void flex_keccak512_close(void *cc, void *dst) {
+  flex_keccak512_addbits_and_close(cc, 0, 0, dst);
 }
 
-/* see sph_keccak.h */
-void sph_keccak512_addbits_and_close(void *cc, unsigned ub, unsigned n,
-                                     void *dst) {
+/* see flex_keccak.h */
+void flex_keccak512_addbits_and_close(void *cc, unsigned ub, unsigned n,
+                                      void *dst) {
   keccak_close64(cc, ub, n, dst);
 }
 
