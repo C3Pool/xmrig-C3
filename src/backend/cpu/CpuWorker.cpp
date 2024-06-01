@@ -37,7 +37,6 @@
 #include "crypto/rx/RxDataset.h"
 #include "crypto/rx/RxVm.h"
 #include "crypto/ghostrider/ghostrider.h"
-#include "crypto/ghostrider/sph_keccak.h"
 #include "crypto/flex/flex.h"
 #include "net/JobResults.h"
 
@@ -101,7 +100,6 @@ xmrig::CpuWorker<N>::CpuWorker(size_t id, const CpuLaunchData &data) :
 
 #   ifdef XMRIG_ALGO_GHOSTRIDER
     m_ghHelper = ghostrider::create_helper_thread(affinity(), data.priority, data.affinities);
-    hard_coded_eb = (m_algorithm.id() != Algorithm::FLEX_KCN) ? 1 : 6;
 #   endif
 }
 
@@ -175,7 +173,7 @@ bool xmrig::CpuWorker<N>::selfTest()
             case Algorithm::GHOSTRIDER_RTM:
                 return (N == 8) && verify(Algorithm::GHOSTRIDER_RTM, test_output_gr);
             case Algorithm::FLEX_KCN:
-                return verify(Algorithm::FLEX_KCN, test_output_flex);
+                return (N == 1) && verify(Algorithm::FLEX_KCN, test_output_flex);
             default:;
         }
     }
@@ -340,13 +338,16 @@ void xmrig::CpuWorker<N>::start()
                         case Algorithm::GHOSTRIDER_RTM:
                             if (N == 8) {
                                 ghostrider::hash_octa(m_job.blob(), job.size(), m_hash, m_ctx, m_ghHelper);
-                            }
-                            else {
+                            } else {
                                 valid = false;
                             }
                             break;
                         case Algorithm::FLEX_KCN:
-                            flex_hash(reinterpret_cast<const char*>(m_job.blob()), reinterpret_cast<char*>(m_hash), m_ctx);
+                            if (N == 1) {
+                                flex_hash(reinterpret_cast<const char*>(m_job.blob()), reinterpret_cast<char*>(m_hash), m_ctx);
+                            } else {
+                                valid = false;
+                            }
                             break;
                         default:
                             valid = false;
