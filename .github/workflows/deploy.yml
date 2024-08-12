@@ -78,38 +78,71 @@ jobs:
           name: macos_build
           path: macos_build.tar.gz
 
-  build_lin_rh7:
-    name: Build CentOS 7 artifacts
-    runs-on: ubuntu-latest
-    container: centos:7
+  build_macos_intel:
+    name: Build MacOS (Intel) artifacts
+    runs-on: macos-13
     steps:
-      - name: Prepare CentOS 7 tools
+      - name: Prepare MacOS tools
         run: |
-          yum install -y centos-release-scl epel-release
-          yum install -y devtoolset-9
-          yum install -y wget git cmake3 automake libtool autoconf libstdc++-static glibc-static perl-IPC-Cmd
+          brew install cmake libuv openssl hwloc
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Build hwloc on MacOS
+        run: |
+          curl -O https://download.open-mpi.org/release/hwloc/v2.1/hwloc-2.1.0.tar.bz2
+          tar xjf hwloc-2.1.0.tar.bz2
+          cd hwloc-2.1.0
+          ./configure --disable-shared --enable-static --disable-io --disable-libxml2
+          make -j$(sysctl -n hw.logicalcpu)
+          cd ..
+      - name: Build project on MacOS
+        run: |
+          cmake . -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl -DHWLOC_INCLUDE_DIR=hwloc-2.1.0/include -DHWLOC_LIBRARY=hwloc-2.1.0/hwloc/.libs/libhwloc.a
+          make -j$(sysctl -n hw.logicalcpu)
+          cp src/config.json .
+          tar cfz macos_build_intel.tar.gz xmrig config.json
+      - name: Upload MacOS build artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: macos_build_intel
+          path: macos_build_intel.tar.gz
+
+  build_lin_ub12:
+    name: Build Ubuntu 12.04 artifacts
+    runs-on: ubuntu-latest
+    container: ubuntu:12.04
+    steps:
+      - name: Prepare build tools
+        run: |
+          sed -i -r 's/(archive|security).ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+          apt-get update
+          apt-get install -y python-software-properties
+          add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          apt-get update
+          apt-get install -y git build-essential automake libtool autoconf wget libgmp-dev libmpfr-dev texinfo bison flex gcc-9 g++-9 curl
+          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+          curl -sSL https://cmake.org/files/v3.27/cmake-3.27.9-linux-x86_64.tar.gz | tar -xzC /opt
+          git clone --depth 1 git://sourceware.org/git/binutils-gdb.git /tmp/binutils-gdb
+          (cd /tmp/binutils-gdb && git checkout binutils-2_38 && CC=gcc ./configure && make -j$(nproc) && make install)
       - name: Checkout code
         run: |
           git clone https://github.com/C3Pool/xmrig-C3.git .
-          git checkout ${GITHUB_REF:10}
-      - name: Build project on CentOS 7
+          git checkout $GITHUB_REF_NAME
+      - name: Build project on Ubuntu 12.04
         run: |
-          source /opt/rh/devtoolset-9/enable
-          cd scripts
-          ./build_deps.sh
-          cd ..
-          cmake3 . -DXMRIG_DEPS=scripts/deps
+          cd scripts && ./build_deps.sh && cd ..
+          /opt/cmake-3.27.9-linux-x86_64/bin/cmake . -DXMRIG_DEPS=scripts/deps
           make -j$(nproc)
           cp src/config.json .
-          tar cfz centos7_build.tar.gz xmrig config.json
-      - name: Upload CentOS 7 build artifacts
+          tar cfz ubuntu12_build.tar.gz xmrig config.json
+      - name: Upload Ubuntu 12.04 build artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: centos7_build
-          path: centos7_build.tar.gz
+          name: ubuntu12_build
+          path: ubuntu12_build.tar.gz
 
   deploy:
-    needs: [build_win, build_lin, build_macos, build_lin_rh7]
+    needs: [build_win, build_lin, build_macos, build_macos_intel, build_lin_ub12]
     name: Create release and upload artifacts
     runs-on: ubuntu-latest
     steps:
@@ -125,7 +158,7 @@ jobs:
           prerelease: false
       - name: Set version
         id: version
-        run: echo ::set-output name=VERSION::${GITHUB_REF:10}
+        run: echo ::set-output name=VERSION::$GITHUB_REF_NAME
       - name: Download Windows build artifacts
         uses: actions/download-artifact@v1
         with:
@@ -138,10 +171,14 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: macos_build
-      - name: Download CentOS 7 build artifacts
+      - name: Download MacOS (Intel) build artifacts
         uses: actions/download-artifact@v1
         with:
-          name: centos7_build
+          name: macos_build_intel
+      - name: Download Ubuntu 12.04 build artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: ubuntu12_build
       - name: Upload Windows build release asset
         uses: actions/upload-release-asset@v1.0.1
         env:
@@ -169,13 +206,22 @@ jobs:
           asset_path: macos_build/macos_build.tar.gz
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-mac64.tar.gz
           asset_content_type: application/zip
-      - name: Upload CentOS 7 build release asset
+      - name: Upload MacOS (Intel) build release asset
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: centos7_build/centos7_build.tar.gz
+          asset_path: macos_build_intel/macos_build_intel.tar.gz
+          asset_name: xmrig-${{steps.version.outputs.VERSION}}-mac-intel.tar.gz
+          asset_content_type: application/zip
+      - name: Upload Ubuntu 12.04 build release asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ubuntu12_build/ubuntu12_build.tar.gz
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-lin64-compat.tar.gz
           asset_content_type: application/zip
       - name: Update xmrig_setup repo
@@ -184,11 +230,11 @@ jobs:
           cd xmrig_setup
           git config user.name  C3Pool
           git config user.email support@C3Pool.com
-          cp ../centos7_build/centos7_build.tar.gz xmrig.tar.gz
+          cp ../ubuntu12_build/ubuntu12_build.tar.gz xmrig.tar.gz
           cp ../windows_build/windows_build.zip xmrig.zip
           unzip xmrig.zip
           zip -u offline_miner_setup.zip xmrig.exe config.json WinRing0x64.sys
-          git commit -m "xmrig "${GITHUB_REF:10}" based release" xmrig.tar.gz xmrig.zip offline_miner_setup.zip
+          git commit -m "xmrig "$GITHUB_REF_NAME" based release" xmrig.tar.gz xmrig.zip offline_miner_setup.zip
           git push
           cd ..
       - name: Update hiveos repo
@@ -197,12 +243,12 @@ jobs:
           cd hiveos
           git config user.name  C3Pool
           git config user.email support@C3Pool.com
-          tar xf ../centos7_build/centos7_build.tar.gz
-          mv xmrig c3_xmrig/xmrig
-          mv config.json c3_xmrig/config_global.json
-          export VER=${GITHUB_REF:10}
+          tar xf ../ubuntu12_build/ubuntu12_build.tar.gz
+          mv xmrig mo_xmrig/xmrig
+          mv config.json mo_xmrig/config_global.json
+          export VER=$GITHUB_REF_NAME
           export VER=${VER//-/_}
-          tar -zcvf c3_xmrig-$VER.tar.gz c3_xmrig
-          git add c3_xmrig-$VER.tar.gz c3_xmrig/xmrig c3_xmrig/config_global.json
-          git commit -m "xmrig "${GITHUB_REF:10}" based release" c3_xmrig-$VER.tar.gz
+          tar -zcvf mo_xmrig-$VER.tar.gz mo_xmrig
+          git add mo_xmrig-$VER.tar.gz mo_xmrig/xmrig mo_xmrig/config_global.json
+          git commit -m "xmrig "$GITHUB_REF_NAME" based release" mo_xmrig-$VER.tar.gz
           git push
