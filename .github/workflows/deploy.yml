@@ -160,23 +160,23 @@ jobs:
         id: version
         run: echo ::set-output name=VERSION::$GITHUB_REF_NAME
       - name: Download Windows build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: windows_build
       - name: Download Ubuntu build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ubuntu_build
       - name: Download MacOS build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: macos_build
       - name: Download MacOS (Intel) build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: macos_build_intel
       - name: Download Ubuntu 12.04 build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: ubuntu12_build
       - name: Upload Windows build release asset
