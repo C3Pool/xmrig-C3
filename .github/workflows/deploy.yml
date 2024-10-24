@@ -22,7 +22,7 @@ jobs:
           copy bin\WinRing0\WinRing0x64.sys .
           7z a -tzip -mx windows_build.zip xmrig.exe config.json WinRing0x64.sys
       - name: Upload Windows build artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: windows_build
           path: windows_build.zip
@@ -44,7 +44,7 @@ jobs:
           cp src/config.json .
           tar cfz ubuntu_build.tar.gz xmrig config.json
       - name: Upload Ubuntu build artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ubuntu_build
           path: ubuntu_build.tar.gz
@@ -73,7 +73,7 @@ jobs:
           cp src/config.json .
           tar cfz macos_build.tar.gz xmrig config.json
       - name: Upload MacOS build artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: macos_build
           path: macos_build.tar.gz
@@ -102,7 +102,7 @@ jobs:
           cp src/config.json .
           tar cfz macos_build_intel.tar.gz xmrig config.json
       - name: Upload MacOS build artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: macos_build_intel
           path: macos_build_intel.tar.gz
@@ -110,10 +110,12 @@ jobs:
   build_lin_ub12:
     name: Build Ubuntu 12.04 artifacts
     runs-on: ubuntu-latest
-    container: ubuntu:12.04
     steps:
-      - name: Prepare build tools
+      - name: Run build inside docker
         run: |
+          mkdir /tmp/docker
+          cat >/tmp/docker/script.sh <<EOF
+          set -x
           sed -i -r 's/(archive|security).ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
           apt-get update
           apt-get install -y python-software-properties
@@ -124,22 +126,24 @@ jobs:
           curl -sSL https://cmake.org/files/v3.27/cmake-3.27.9-linux-x86_64.tar.gz | tar -xzC /opt
           git clone --depth 1 git://sourceware.org/git/binutils-gdb.git /tmp/binutils-gdb
           (cd /tmp/binutils-gdb && git checkout binutils-2_38 && CC=gcc ./configure && make -j$(nproc) && make install)
-      - name: Checkout code
-        run: |
-          git clone https://github.com/C3Pool/xmrig-C3.git .
+
+          git clone https://github.com/C3Pool/xmrig-C3.git
+          cd xmrig
           git checkout $GITHUB_REF_NAME
-      - name: Build project on Ubuntu 12.04
-        run: |
-          cd scripts && ./build_deps.sh && cd ..
+
+          (cd scripts && ./build_deps.sh && cd ..)
           /opt/cmake-3.27.9-linux-x86_64/bin/cmake . -DXMRIG_DEPS=scripts/deps
           make -j$(nproc)
           cp src/config.json .
-          tar cfz ubuntu12_build.tar.gz xmrig config.json
+          tar cfz /tmp/docker/ubuntu12_build.tar.gz xmrig config.json
+          EOF
+          chmod +x /tmp/docker/script.sh
+          docker run -i -v /tmp/docker:/tmp/docker ubuntu:12.04 /bin/bash -c /tmp/docker/script.sh
       - name: Upload Ubuntu 12.04 build artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ubuntu12_build
-          path: ubuntu12_build.tar.gz
+          path: /tmp/docker/ubuntu12_build.tar.gz
 
   deploy:
     needs: [build_win, build_lin, build_macos, build_macos_intel, build_lin_ub12]
@@ -160,23 +164,23 @@ jobs:
         id: version
         run: echo ::set-output name=VERSION::$GITHUB_REF_NAME
       - name: Download Windows build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: windows_build
       - name: Download Ubuntu build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: ubuntu_build
       - name: Download MacOS build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: macos_build
       - name: Download MacOS (Intel) build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: macos_build_intel
       - name: Download Ubuntu 12.04 build artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: ubuntu12_build
       - name: Upload Windows build release asset
@@ -185,7 +189,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows_build/windows_build.zip
+          asset_path: windows_build.zip
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-win64.zip
           asset_content_type: application/zip
       - name: Upload Ubuntu build release asset
@@ -194,7 +198,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ubuntu_build/ubuntu_build.tar.gz
+          asset_path: ubuntu_build.tar.gz
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-lin64.tar.gz
           asset_content_type: application/zip
       - name: Upload MacOS build release asset
@@ -203,7 +207,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: macos_build/macos_build.tar.gz
+          asset_path: macos_build.tar.gz
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-mac64.tar.gz
           asset_content_type: application/zip
       - name: Upload MacOS (Intel) build release asset
@@ -212,7 +216,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: macos_build_intel/macos_build_intel.tar.gz
+          asset_path: macos_build_intel.tar.gz
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-mac-intel.tar.gz
           asset_content_type: application/zip
       - name: Upload Ubuntu 12.04 build release asset
@@ -221,7 +225,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ubuntu12_build/ubuntu12_build.tar.gz
+          asset_path: ubuntu12_build.tar.gz
           asset_name: xmrig-${{steps.version.outputs.VERSION}}-lin64-compat.tar.gz
           asset_content_type: application/zip
       - name: Update xmrig_setup repo
@@ -229,9 +233,9 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/xmrig_setup.git
           cd xmrig_setup
           git config user.name  C3Pool
-          git config user.email support@C3Pool.com
-          cp ../ubuntu12_build/ubuntu12_build.tar.gz xmrig.tar.gz
-          cp ../windows_build/windows_build.zip xmrig.zip
+          git config user.email hkfoan@gmail.com
+          cp ../ubuntu12_build.tar.gz xmrig.tar.gz
+          cp ../windows_build.zip xmrig.zip
           unzip xmrig.zip
           zip -u offline_miner_setup.zip xmrig.exe config.json WinRing0x64.sys
           git commit -m "xmrig "$GITHUB_REF_NAME" based release" xmrig.tar.gz xmrig.zip offline_miner_setup.zip
@@ -242,13 +246,13 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/hiveos.git
           cd hiveos
           git config user.name  C3Pool
-          git config user.email support@C3Pool.com
-          tar xf ../ubuntu12_build/ubuntu12_build.tar.gz
-          mv xmrig mo_xmrig/xmrig
-          mv config.json mo_xmrig/config_global.json
+          git config user.email hkfoan@gmail.com
+          tar xf ../ubuntu12_build.tar.gz
+          mv xmrig c3_xmrig/xmrig
+          mv config.json c3_xmrig/config_global.json
           export VER=$GITHUB_REF_NAME
           export VER=${VER//-/_}
-          tar -zcvf mo_xmrig-$VER.tar.gz mo_xmrig
-          git add mo_xmrig-$VER.tar.gz mo_xmrig/xmrig mo_xmrig/config_global.json
-          git commit -m "xmrig "$GITHUB_REF_NAME" based release" mo_xmrig-$VER.tar.gz
+          tar -zcvf c3_xmrig-$VER.tar.gz c3_xmrig
+          git add c3_xmrig-$VER.tar.gz c3_xmrig/xmrig c3_xmrig/config_global.json
+          git commit -m "xmrig "$GITHUB_REF_NAME" based release" c3_xmrig-$VER.tar.gz
           git push
