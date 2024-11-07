@@ -26,7 +26,7 @@ The preferred way to configure the miner is the [JSON config file](https://xmrig
 
 ## Donations
 * Default donation set at 0%.
-* XMR: `48edfHu7V9Z84YzzMa6fUueoELZ9ZRXq9VetWzYGzKt52XU5xvqgzYnDK9URnRoJMk1j8nLwEVsaSWJ4fhdUyZijBGUicoD`
+* XMR: `45AZcX57GfRjg4s9WSwZkmTESNbJsrnHEHvzZfaWyh8m3KQNporeC9GaTavvEhQSPWUsLWvsKQo79EFnkvhkoUi7FdMBi5f`
 
 ## Developers
 * **[xmrig](https://github.com/xmrig)**
