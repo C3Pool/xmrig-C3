@@ -94,7 +94,7 @@ jobs:
 
   build_macos_intel:
     name: Build MacOS (Intel) artifacts
-    runs-on: macos-13
+    runs-on: macos-15
     steps:
       - name: Prepare MacOS tools
         run: |
@@ -247,7 +247,7 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/xmrig_setup.git
           cd xmrig_setup
           git config user.name  C3Pool
-          git config user.email hkfoan@gmail.com
+          git config user.email support@c3pool.com
           cp ../ubuntu12_build.tar.gz xmrig.tar.gz
           cp ../windows_build.zip xmrig.zip
           unzip xmrig.zip
@@ -260,7 +260,7 @@ jobs:
           git clone https://$GITHUB_ACTOR:${{secrets.xmrig_setup_key}}@github.com/C3Pool/hiveos.git
           cd hiveos
           git config user.name  C3Pool
-          git config user.email hkfoan@gmail.com
+          git config user.email support@c3pool.com
           tar xf ../ubuntu12_build.tar.gz
           mv xmrig c3_xmrig/xmrig
           mv config.json c3_xmrig/config_global.json
