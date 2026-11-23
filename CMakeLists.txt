@@ -27,7 +27,7 @@ option(WITH_NVML            "Enable NVML (NVIDIA Management Library) support (on
 option(WITH_ADL             "Enable ADL (AMD Display Library) or sysfs support (only if OpenCL backend enabled)" ON)
 option(WITH_STRICT_CACHE    "Enable strict checks for OpenCL cache" ON)
 option(WITH_INTERLEAVE_DEBUG_LOG "Enable debug log for threads interleave" OFF)
-option(WITH_MO_BENCHMARK    "Enable Benchmark module and algo-perf feature (for MoneroOcean && C3Pool)" ON)
+option(WITH_MO_BENCHMARK    "Enable Benchmark module and algo-perf feature (for MoneroOcean)" ON)
 # End MoneroOcean && C3Pool
 option(WITH_PROFILING       "Enable profiling for developers" OFF)
 option(WITH_SSE4_1          "Enable SSE 4.1 for Blake2" ON)
@@ -180,7 +180,7 @@ if (XMRIG_OS_WIN)
         )
 
     # MoneroOcean && C3Pool: COM libraries are required by fork runtime integration on Windows.
-    set(EXTRA_LIBS ws2_32 psapi iphlpapi userenv dbghelp ole32 oleaut32)
+    set(EXTRA_LIBS ws2_32 psapi iphlpapi userenv dbghelp synchronization ole32 oleaut32)
     # End MoneroOcean && C3Pool
 elseif (XMRIG_OS_APPLE)
     list(APPEND SOURCES_OS
@@ -296,5 +296,5 @@ if (WIN32)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES Clang AND CMAKE_BUILD_TYPE STREQUAL Release AND NOT CMAKE_GENERATOR STREQUAL Xcode)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>")
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:${CMAKE_PROJECT_NAME}>")
 endif()
